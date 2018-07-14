@@ -1,2 +1,4 @@
 # Blinker_PRO_AQI_Detector
-Blinker PRO, open source device AQI detector
+Open source AQI Detector, Blinker PRO device  
+  
+Learn more: https://blinker.app  
