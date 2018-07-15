@@ -28,17 +28,12 @@ static bool inited = false;
 static bool isAQI = true;
 static bool isReset = false;
 
-// #define BUTTON_1 "ButtonKey"
-
-
 void changeMain() {
     isAQI = !isAQI;
 }
 
 void display()
 {
-    // u8g2.firstPage();
-    // do {
     if (!isReset) {
         if (isAQI) {
             aqiDisplay(pm1_0Get(), pm2_5Get(), pm10_0Get(), humiGet(),
@@ -52,7 +47,6 @@ void display()
     else {
         resetDisplay();
     }
-    // } while ( u8g2.nextPage() );
 }
 
 bool checkInit()
@@ -67,6 +61,26 @@ bool checkInit()
     }
     else {
         return true;
+    }
+}
+
+void aqiFresh()
+{
+    if (!checkInit()) {
+        if (initDisplay()) {
+            Blinker.delay(5);
+        }
+        else if (isReset) {
+            freshDisplay();
+        }
+        else {
+            pmsFresh();
+            freshDisplay();
+        }
+    }
+    else {
+        pmsFresh();
+        freshDisplay();
     }
 }
 
@@ -121,7 +135,7 @@ void singalClick()
     changeDetail();
 
     if (inited) {
-        display();
+        freshDisplay();
     }
 
     BLINKER_LOG1("Button clicked!");
@@ -137,7 +151,7 @@ void doubleClick()
     changeMain();
 
     if (inited) {
-        display();
+        freshDisplay();
     }
 
     BLINKER_LOG1("Button double clicked!");
@@ -146,7 +160,7 @@ void doubleClick()
 void longPressStart()
 {
     isReset = true;
-    display();
+    freshDisplay();
 
     BLINKER_LOG1("Button long press start!");
 }
@@ -178,28 +192,7 @@ void AQI_run()
 {
     Blinker.run();
 
-    // pmsFresh();
-    if (!checkInit()) {
-        // if (pmsFresh()) {
-        //     display();
-        // }
-        // else {
-        // }
-        if (initDisplay()) {
-            Blinker.delay(5);
-        }
-        else if (isReset) {
-            display();
-        }
-        else {
-            pmsFresh();
-            display();
-        }
-    }
-    else {
-        pmsFresh();
-        display();
-    }
+    aqiFresh();
 }
 
 #endif

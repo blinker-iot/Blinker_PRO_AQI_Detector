@@ -31,22 +31,6 @@ void freshDisplay()
         if (_diplayFunc) {
             _diplayFunc();
         }
-        // if (!isReset) {
-        //     if (isAQI) {
-        //         aqiDisplay(pms.getPmAto(1.0), pms.getPmAto(2.5),
-        //                 pms.getPmAto(10), pms.getHumi(),
-        //                 pms.getForm(), pms.getTemp(),
-        //                 Blinker.hour(), Blinker.minute());
-        //     }
-        //     else {
-        //         timeDisplay(pms.getPmAto(2.5), Blinker.month(), 
-        //                 Blinker.mday(), Blinker.wday(), 
-        //                 Blinker.hour(), Blinker.minute());
-        //     }
-        // }
-        // else {
-        //     resetDisplay();
-        // }
     } while ( u8g2.nextPage() );
 }
 
