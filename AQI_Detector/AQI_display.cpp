@@ -14,18 +14,36 @@
 // U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /*reset Pin*/ D0);
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /*reset Pin*/ BLINKER_OLED_RESET_PIN);
 
+#include <Adafruit_NeoPixel.h>
+
+#define NUMPIXELS 1
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
+
 static bool isDisplayDetail = false;
 static uint8_t displayLanguage = BLINKER_LANGUAGE_CN;
 static uint8_t initProgressBar = 0;
+static uint8_t TARGET_CR = 255;
+static uint8_t AQI_BASE = 0;
 static callbackFunction _diplayFunc;
+static callbackFunction_arg_u8 _colorFunc;
 
 void attachDisplay(callbackFunction _func)
 {
     _diplayFunc = _func;
 }
 
+void attachColor(callbackFunction_arg_u8 _func)
+{
+    _colorFunc = _func;
+}
+
 void freshDisplay()
 {
+    colorDisplay();
+
+    u8g2.setContrast(TARGET_CR);
+
     u8g2.firstPage();
     do {
         if (_diplayFunc) {
@@ -116,6 +134,59 @@ static String months(uint8_t mons) {
         case 9: return F("Oct");
         case 10: return F("Nov");
         case 11: return F("Dec");
+    }
+}
+
+static void colorDisplay()
+{
+    uint8_t R = 0, G = 0, B = 0;
+    // switch (AQIBUFFER[AQI_BASE][1]) {
+    if (!_colorFunc) {
+        return;
+    }
+    switch(_colorFunc(AQI_BASE)) {
+        case 0: /*IOT_DEBUG_PRINT1("color Green");*/    
+            R = 0;                              
+            G = map(TARGET_CR, 0, 255, 0, 64);  
+            B = 0;                              
+            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+            pixels.show(); 
+            break;
+        case 1: /*IOT_DEBUG_PRINT1("color Yellow");*/   
+            R = map(TARGET_CR, 0, 255, 0, 64);  
+            G = map(TARGET_CR, 0, 255, 0, 64);  
+            B = 0;                              
+            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+            pixels.show(); 
+            break;
+        case 2: /*IOT_DEBUG_PRINT1("color Orange");*/   
+            R = map(TARGET_CR, 0, 255, 0, 64);  
+            G = map(TARGET_CR, 0, 255, 0, 32);  
+            B = 0;                              
+            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+            pixels.show(); 
+            break;
+        case 3: /*IOT_DEBUG_PRINT1("color Red");*/      
+            R = map(TARGET_CR, 0, 255, 0, 64);  
+            G = 0;                              
+            B = 0;                              
+            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+            pixels.show(); 
+            break;
+        case 4: /*IOT_DEBUG_PRINT1("color Purple");*/   
+            R = map(TARGET_CR, 0, 255, 0, 32);  
+            G = 0;                              
+            B = map(TARGET_CR, 0, 255, 0, 32);  
+            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+            pixels.show(); 
+            break;
+        case 5: /*IOT_DEBUG_PRINT1("color Maroon");*/   
+            R = map(TARGET_CR, 0, 255, 0, 32);  
+            G = map(TARGET_CR, 0, 255, 0, 4);   
+            B = map(TARGET_CR, 0, 255, 0, 6);   
+            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+            pixels.show(); 
+            break;
     }
 }
 
@@ -306,6 +377,8 @@ bool initDisplay()
 
 void u8g2Init()
 {
+    pixels.begin();
+
     u8g2.begin();
     u8g2.setFlipMode(0);
     u8g2.enableUTF8Print();    

@@ -5,6 +5,7 @@
 
 extern "C" {
     typedef void (*callbackFunction)(void);
+    typedef uint8_t (*callbackFunction_arg_u8)(uint8_t arg);
 }
 
 void attachDisplay(callbackFunction _func);
@@ -22,6 +23,8 @@ uint8_t getSignals();
 static String weekDays(uint8_t weekDay);
 
 static String months(uint8_t mons);
+
+static void colorDisplay();
 
 void aqiDisplay(uint16_t _pm1_0, uint16_t _pm2_5, uint16_t _pm10_0, double _humi, 
             double _hcho, double _temp, int8_t _hour, int8_t _min);
