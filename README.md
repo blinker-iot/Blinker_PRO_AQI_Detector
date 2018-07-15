@@ -14,12 +14,12 @@ You should have the following ready before beginning with any board:
 
 
 # Hardware Needs
-Name | Quantity  
-- | -:  
-ESP8266 | 1  
-PMS5003ST | 1  
-SH1106 1.3' | 1  
-WS2812 | 1  
-Button | 1  
+| Name | Quantity |  
+| - | -: |  
+| ESP8266 | 1 |  
+| PMS5003ST | 1 |  
+| SH1106 1.3' | 1 |  
+| WS2812 | 1 |  
+| Button | 1 |  
   
 Learn more: https://blinker.app  
