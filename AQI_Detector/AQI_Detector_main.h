@@ -18,9 +18,6 @@
 
 #define BLINKER_BUTTON
 #define BLINKER_BUTTON_PIN D7
-#define BLINKER_PMS_RX_PIN D8
-#define BLINKER_PMS_TX_PIN D9
-#define BLINKER_OLED_RESET_PIN D3
 
 #include <Blinker.h>
 
@@ -40,25 +37,22 @@ void changeMain() {
 
 void display()
 {
-    u8g2.firstPage();
-    do {
-        if (!isReset) {
-            if (isAQI) {
-                aqiDisplay(pms.getPmAto(1.0), pms.getPmAto(2.5),
-                        pms.getPmAto(10), pms.getHumi(),
-                        pms.getForm(), pms.getTemp(),
-                        Blinker.hour(), Blinker.minute());
-            }
-            else {
-                timeDisplay(pms.getPmAto(2.5), Blinker.month(), 
-                        Blinker.mday(), Blinker.wday(), 
-                        Blinker.hour(), Blinker.minute());
-            }
+    // u8g2.firstPage();
+    // do {
+    if (!isReset) {
+        if (isAQI) {
+            aqiDisplay(pm1_0Get(), pm2_5Get(), pm10_0Get(), humiGet(),
+                    hchoGet(), tempGet(), Blinker.hour(), Blinker.minute());
         }
         else {
-            resetDisplay();
+            timeDisplay(pm2_5Get(), Blinker.month(), Blinker.mday(), 
+                    Blinker.wday(), Blinker.hour(), Blinker.minute());
         }
-    } while ( u8g2.nextPage() );
+    }
+    else {
+        resetDisplay();
+    }
+    // } while ( u8g2.nextPage() );
 }
 
 bool checkInit()
@@ -176,6 +170,8 @@ void AQI_init()
     Blinker.attachLongPressStart(longPressStart);
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
 #endif
+
+    attachDisplay(display);
 }
 
 void AQI_run()

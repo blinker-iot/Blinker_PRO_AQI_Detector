@@ -9,7 +9,7 @@
  * Learn more:https://blinker.app/
  */
 
-#include "AQI_main.h"
+#include "AQI_Detector_main.h"
 
 void setup()
 {
