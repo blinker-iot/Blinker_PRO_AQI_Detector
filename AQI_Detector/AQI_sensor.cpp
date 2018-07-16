@@ -1,4 +1,3 @@
-#include "AQI_config.h"
 #include "AQI_sensor.h"
 
 // BLINKER_PMSX003ST, https://github.com/i3water/Blinker_PMSX003ST

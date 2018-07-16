@@ -1,12 +1,20 @@
 #ifndef BLINKER_AQI_DISPLAY_H
 #define BLINKER_AQI_DISPLAY_H
 
-#include "arduino.h"
+#include "AQI_config.h"
 
 extern "C" {
     typedef void (*callbackFunction)(void);
     typedef uint8_t (*callbackFunction_arg_u8)(uint8_t arg);
 }
+
+void setAQIbase(uint8_t _base);
+
+String getAQIbase();
+
+void setLanguage(uint8_t _lang);
+
+String getLanguage();
 
 void attachDisplay(callbackFunction _func);
 

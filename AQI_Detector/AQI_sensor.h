@@ -1,7 +1,7 @@
 #ifndef BLINKER_AQI_SENSOR_H
 #define BLINKER_AQI_SENSOR_H
 
-#include "arduino.h"
+#include "AQI_config.h"
 
 uint16_t pm1_0Get();
 

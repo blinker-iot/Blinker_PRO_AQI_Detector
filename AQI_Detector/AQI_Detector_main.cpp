@@ -51,7 +51,17 @@ bool dataParse(const JsonObject & data)
  */
 void heartbeat()
 {
-    Blinker.print("hello", "blinker");
+    Blinker.print("aqibase", getAQIbase());
+    Blinker.print("langauage", getLanguage());
+    Blinker.print("timezone", Blinker.getTimezone());
+
+    String values = "{\"pm1.0\":" + STRING_format(pm1_0Get()) + ",\"pm2.5\":" + STRING_format(pm2_5Get()) + \
+                    ",\"pm10\":" + STRING_format(pm10_0Get()) + ",\"hcho\":" + STRING_format(hchoGet()) + \
+                    ",\"temp\":" + STRING_format(tempGet()) + ",\"humi\":" + STRING_format(humiGet()) + \
+                    ",\"AQICN\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_CN)) + \
+                    ",\"AQIUS\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_US)) + "}";
+
+    Blinker.printObject("detector", values);
 
     BLINKER_LOG1("heartbeat!");
 }

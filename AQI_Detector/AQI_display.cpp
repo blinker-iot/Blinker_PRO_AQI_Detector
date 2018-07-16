@@ -1,4 +1,3 @@
-#include "AQI_config.h"
 #include "AQI_display.h"
 #include "AQI_font.h"
 
@@ -23,10 +22,54 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, BLINKER_WS2812_PIN, NEO_
 static bool isDisplayDetail = false;
 static uint8_t displayLanguage = BLINKER_LANGUAGE_CN;
 static uint8_t initProgressBar = 0;
-static uint8_t TARGET_CR = 255;
+static uint8_t targetContrast = 255;
 static uint8_t AQI_BASE = 0;
 static callbackFunction _diplayFunc;
 static callbackFunction_arg_u8 _colorFunc;
+
+void setAQIbase(uint8_t _base)
+{
+    if (_base > BLINKER_AQI_BASE_CN) {
+        AQI_BASE = BLINKER_AQI_BASE_US;
+    }
+    else {
+        AQI_BASE = _base;
+    }
+}
+
+String getAQIbase()
+{
+    switch(AQI_BASE) {
+        case BLINKER_AQI_BASE_US :
+            return "us";
+        case BLINKER_AQI_BASE_CN :
+            return "cn";
+        default :
+            return "us";
+    } 
+}
+
+void setLanguage(uint8_t _lang)
+{
+    if (_lang > BLINKER_LANGUAGE_EN) {
+        displayLanguage = BLINKER_LANGUAGE_CN;
+    }
+    else {
+        displayLanguage = _lang;
+    }
+}
+
+String getLanguage()
+{
+    switch(displayLanguage) {
+        case BLINKER_LANGUAGE_CN :
+            return "cn";
+        case BLINKER_LANGUAGE_EN :
+            return "en";
+        default :
+            return "cn";
+    }
+}
 
 void attachDisplay(callbackFunction _func)
 {
@@ -42,7 +85,7 @@ void freshDisplay()
 {
     colorDisplay();
 
-    u8g2.setContrast(TARGET_CR);
+    u8g2.setContrast(targetContrast);
 
     u8g2.firstPage();
     do {
@@ -147,43 +190,43 @@ static void colorDisplay()
     switch(_colorFunc(AQI_BASE)) {
         case 0: /*IOT_DEBUG_PRINT1("color Green");*/    
             R = 0;                              
-            G = map(TARGET_CR, 0, 255, 0, 64);  
+            G = map(targetContrast, 0, 255, 0, 64);  
             B = 0;                              
             pixels.setPixelColor(0, pixels.Color(R, G, B)); 
             pixels.show(); 
             break;
         case 1: /*IOT_DEBUG_PRINT1("color Yellow");*/   
-            R = map(TARGET_CR, 0, 255, 0, 64);  
-            G = map(TARGET_CR, 0, 255, 0, 64);  
+            R = map(targetContrast, 0, 255, 0, 64);  
+            G = map(targetContrast, 0, 255, 0, 64);  
             B = 0;                              
             pixels.setPixelColor(0, pixels.Color(R, G, B)); 
             pixels.show(); 
             break;
         case 2: /*IOT_DEBUG_PRINT1("color Orange");*/   
-            R = map(TARGET_CR, 0, 255, 0, 64);  
-            G = map(TARGET_CR, 0, 255, 0, 32);  
+            R = map(targetContrast, 0, 255, 0, 64);  
+            G = map(targetContrast, 0, 255, 0, 32);  
             B = 0;                              
             pixels.setPixelColor(0, pixels.Color(R, G, B)); 
             pixels.show(); 
             break;
         case 3: /*IOT_DEBUG_PRINT1("color Red");*/      
-            R = map(TARGET_CR, 0, 255, 0, 64);  
+            R = map(targetContrast, 0, 255, 0, 64);  
             G = 0;                              
             B = 0;                              
             pixels.setPixelColor(0, pixels.Color(R, G, B)); 
             pixels.show(); 
             break;
         case 4: /*IOT_DEBUG_PRINT1("color Purple");*/   
-            R = map(TARGET_CR, 0, 255, 0, 32);  
+            R = map(targetContrast, 0, 255, 0, 32);  
             G = 0;                              
-            B = map(TARGET_CR, 0, 255, 0, 32);  
+            B = map(targetContrast, 0, 255, 0, 32);  
             pixels.setPixelColor(0, pixels.Color(R, G, B)); 
             pixels.show(); 
             break;
         case 5: /*IOT_DEBUG_PRINT1("color Maroon");*/   
-            R = map(TARGET_CR, 0, 255, 0, 32);  
-            G = map(TARGET_CR, 0, 255, 0, 4);   
-            B = map(TARGET_CR, 0, 255, 0, 6);   
+            R = map(targetContrast, 0, 255, 0, 32);  
+            G = map(targetContrast, 0, 255, 0, 4);   
+            B = map(targetContrast, 0, 255, 0, 6);   
             pixels.setPixelColor(0, pixels.Color(R, G, B)); 
             pixels.show(); 
             break;
