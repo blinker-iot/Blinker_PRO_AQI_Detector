@@ -27,6 +27,16 @@ static uint8_t AQI_BASE = 0;
 static callbackFunction _diplayFunc;
 static callbackFunction_arg_u8 _colorFunc;
 
+void setContrast(uint8_t _contrast)
+{
+    targetContrast = _contrast;
+}
+
+uint8_t getContrast()
+{
+    return targetContrast;
+}
+
 void setAQIbase(uint8_t _base)
 {
     if (_base > BLINKER_AQI_BASE_CN) {

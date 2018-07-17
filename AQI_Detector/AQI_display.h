@@ -8,6 +8,10 @@ extern "C" {
     typedef uint8_t (*callbackFunction_arg_u8)(uint8_t arg);
 }
 
+void setContrast(uint8_t _contrast);
+
+uint8_t getContrast();
+
 void setAQIbase(uint8_t _base);
 
 String getAQIbase();

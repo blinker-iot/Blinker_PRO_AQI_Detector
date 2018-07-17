@@ -29,16 +29,64 @@ static bool isReset = false;
 /* 
  * Add your command parse code in this function
  * 
- * When get a command and device not parsed this command, device will call this function
+ * When get a command and device not parsed this command, 
+ * device will call this function with a JsonObject data.
  */
 bool dataParse(const JsonObject & data)
 {
     String getData;
-
     data.printTo(getData);
-    
     BLINKER_LOG2("Get user command: ", getData);
-    return true;
+
+    bool isParsed = false;
+
+    if (data.containsKey(BLINKER_CMD_SET)) {
+        String setData = data[BLINKER_CMD_SET];
+
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& setJson = jsonBuffer.parseObject(setData);
+
+        if (setJson.containsKey("langauage")) {
+            if (setJson["langauage"] == "cn") {
+                setLanguage(BLINKER_LANGUAGE_CN);
+            }
+            else {
+                setLanguage(BLINKER_LANGUAGE_EN);
+            }
+
+            isParsed = true;
+        }
+        if (setJson.containsKey("aqibase")) {
+            if (setJson["aqibase"] == "us") {
+                setAQIbase(BLINKER_AQI_BASE_US);
+            }
+            else {
+                setAQIbase(BLINKER_AQI_BASE_CN);
+            }
+
+            isParsed = true;
+        }
+        if (setJson.containsKey("contrast")) {
+            uint8_t _contrast = setJson["contrast"];
+
+            setContrast(_contrast);
+
+            isParsed = true;
+        }
+    }
+    else if (data.containsKey(BLINKER_CMD_GET)) {
+        String getData = data[BLINKER_CMD_GET];
+
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& getJson = jsonBuffer.parseObject(getData);
+    }
+
+    if (isParsed) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 /* 
@@ -55,9 +103,12 @@ void heartbeat()
     Blinker.print("langauage", getLanguage());
     Blinker.print("timezone", Blinker.getTimezone());
 
-    String values = "{\"pm1.0\":" + STRING_format(pm1_0Get()) + ",\"pm2.5\":" + STRING_format(pm2_5Get()) + \
-                    ",\"pm10\":" + STRING_format(pm10_0Get()) + ",\"hcho\":" + STRING_format(hchoGet()) + \
-                    ",\"temp\":" + STRING_format(tempGet()) + ",\"humi\":" + STRING_format(humiGet()) + \
+    String values = "{\"pm1.0\":" + STRING_format(pm1_0Get()) + \
+                    ",\"pm2.5\":" + STRING_format(pm2_5Get()) + \
+                    ",\"pm10\":" + STRING_format(pm10_0Get()) + \
+                    ",\"hcho\":" + STRING_format(hchoGet()) + \
+                    ",\"temp\":" + STRING_format(tempGet()) + \
+                    ",\"humi\":" + STRING_format(humiGet()) + \
                     ",\"AQICN\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_CN)) + \
                     ",\"AQIUS\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_US)) + "}";
 
@@ -111,6 +162,11 @@ void doubleClick()
     BLINKER_LOG1("Button double clicked!");
 }
 
+/* 
+ * Add your code in this function
+ * 
+ * When long press start, device will call this function
+ */
 void longPressStart()
 {
     isReset = true;

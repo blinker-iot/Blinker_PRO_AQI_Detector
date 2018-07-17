@@ -3,9 +3,6 @@
 
 #include <U8g2lib.h>
 
-#define BLINKER_LANGUAGE_CN 0
-#define BLINKER_LANGUAGE_EN 1
-
 uint8_t helvR10_w = 8;
 uint8_t wqy14_w = 12;
 uint8_t fzht48_w = 26;
