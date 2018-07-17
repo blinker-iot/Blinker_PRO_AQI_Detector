@@ -18,6 +18,8 @@ String getLanguage();
 
 void attachDisplay(callbackFunction _func);
 
+void attachColor(callbackFunction_arg_u8 _func);
+
 void freshDisplay();
 
 void changeDetail();

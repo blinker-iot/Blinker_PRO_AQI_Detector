@@ -140,6 +140,7 @@ void AQI_init()
 #endif
 
     attachDisplay(display);
+    attachColor(aqiLevelGet);
 }
 
 void AQI_run()
