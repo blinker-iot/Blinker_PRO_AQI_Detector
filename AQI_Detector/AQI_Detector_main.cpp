@@ -221,17 +221,21 @@ double getBAT()
     return voltage;
 }
 
+void hardwareInit()
+{
+    pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
+    digitalWrite(BLINKER_POWER_3V3_PIN, HIGH);
+    pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
+    digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
+
+    batRead = getBAT();
+}
+
 void AQI_init()
 {
     Serial.begin(115200);
 
-    pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
-    digitalWrite(BLINKER_POWER_3V3_PIN, HIGH); //自身3.3V控制
-    pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
-    digitalWrite(BLINKER_POWER_5V_PIN, HIGH); //5V升压控制
-
-    batRead = getBAT();
-
+    hardwareInit();
     u8g2Init();
     pmsInit();
     
@@ -279,7 +283,7 @@ void display()
 {
     if (!isLongPress) {
         batDisplay(batRead);
-        
+
         if (isAQI) {
             aqiDisplay(pm1_0Get(), pm2_5Get(), pm10_0Get(), humiGet(),
                     hchoGet(), tempGet(), Blinker.hour(), Blinker.minute());
