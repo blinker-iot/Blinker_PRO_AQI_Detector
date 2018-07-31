@@ -14,7 +14,9 @@
 #define BLINKER_DEBUG_ALL
 
 #define BLINKER_BUTTON
-#define BLINKER_BUTTON_PIN D7
+#define BLINKER_BUTTON_PULLDOWN
+#define BLINKER_BUTTON_LONGPRESS_POWERDOWN
+#define BLINKER_BUTTON_PIN 12
 
 #include <Blinker.h>
 
@@ -167,18 +169,53 @@ void doubleClick()
  * 
  * When long press start, device will call this function
  */
-void longPressStart()
+// void longPressStart()
+// {
+//     // isReset = true;
+//     freshDisplay();
+
+//     BLINKER_LOG1("Button long press start!");
+// }
+
+void longPressPowerdown()
+{
+    freshDisplay();
+
+    BLINKER_LOG1("Button long press powerdown!");
+}
+
+void longPressReset()
 {
     isReset = true;
     freshDisplay();
 
-    BLINKER_LOG1("Button long press start!");
+    BLINKER_LOG1("Button long press reset!");
 }
 #endif
+
+void getBAT()
+{
+    int sensorValue = analogRead(A0);
+    sensorValue += analogRead(A0);
+    sensorValue += analogRead(A0);
+    sensorValue += analogRead(A0);
+    sensorValue += analogRead(A0);
+    sensorValue += analogRead(A0);
+    sensorValue += analogRead(A0);
+    sensorValue += analogRead(A0);
+    float voltage = sensorValue * (5.926 / 1023.0 / 8.0);
+    BLINKER_LOG2("bat: ", voltage);
+
+}
 
 void AQI_init()
 {
     Serial.begin(115200);
+
+    pinMode(BLINKER_POWER_3V3_PIN, OUTPUT);
+    digitalWrite(BLINKER_POWER_3V3_PIN, HIGH); //自身3.3V控制
+    pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
+    digitalWrite(BLINKER_POWER_5V_PIN, HIGH); //5V升压控制
 
     u8g2Init();
     pmsInit();
@@ -191,7 +228,10 @@ void AQI_init()
 #if defined(BLINKER_BUTTON)
     Blinker.attachClick(singalClick);
     Blinker.attachDoubleClick(doubleClick);
-    Blinker.attachLongPressStart(longPressStart);
+    // Blinker.attachLongPressStart(longPressStart);
+    Blinker.attachLongPressPowerdown(longPressPowerdown);
+    Blinker.attachLongPressReset(longPressReset);
+
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
 #endif
 
@@ -199,11 +239,19 @@ void AQI_init()
     attachColor(aqiLevelGet);
 }
 
+uint32_t fresh = 0;
+
 void AQI_run()
 {
     Blinker.run();
 
     aqiFresh();
+
+    if ((millis() - fresh) > 10000)
+    {
+        getBAT();
+        fresh = millis();
+    }
 }
 
 void changeMain()
