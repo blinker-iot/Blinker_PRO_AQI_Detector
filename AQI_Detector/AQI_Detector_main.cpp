@@ -28,6 +28,7 @@ static bool inited = false;
 static bool isAQI = true;
 static bool isLongPress = false;
 static double batRead;
+static uint32_t batFresh = 0;
 
 /* 
  * Add your command parse code in this function
@@ -187,6 +188,11 @@ void longPressStart()
     BLINKER_LOG1("Button long press start!");
 }
 
+/* 
+ * Add your code in this function
+ * 
+ * When long press stop and trigged POWERDOWN, device will call this function
+ */
 void longPressPowerdown()
 {
     freshDisplay();
@@ -196,6 +202,11 @@ void longPressPowerdown()
     digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
 
+/* 
+ * Add your code in this function
+ * 
+ * When long press stop and trigged RESET, device will call this function
+ */
 void longPressReset()
 {
     freshDisplay();
@@ -214,11 +225,26 @@ double getBAT()
     sensorValue += analogRead(A0);
     sensorValue += analogRead(A0);
     sensorValue += analogRead(A0);
+
     double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
 
     // BLINKER_LOG2("bat: ", voltage);
 
     return voltage;
+}
+
+void batCheck()
+{
+    if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
+    {
+        batRead = getBAT();
+        BLINKER_LOG2("bat: ", batRead);
+        batFresh = millis();
+
+        if (batRead < BLINKER_BAT_POWER_LOW) {
+            digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+        }
+    }
 }
 
 void hardwareInit()
@@ -258,20 +284,13 @@ void AQI_init()
     attachColor(aqiLevelGet);
 }
 
-uint32_t fresh = 0;
-
 void AQI_run()
 {
     Blinker.run();
 
-    aqiFresh();
+    batCheck();
 
-    if ((millis() - fresh) > 10000)
-    {
-        batRead = getBAT();
-        BLINKER_LOG2("bat: ", batRead);
-        fresh = millis();
-    }
+    aqiFresh();
 }
 
 void changeMain()

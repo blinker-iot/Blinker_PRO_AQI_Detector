@@ -246,11 +246,11 @@ static void colorDisplay()
 
 void batDisplay(double _bat)
 {
-    if (_bat > 4.2) {
-        _bat = 4.2;
+    if (_bat > BLINKER_BAT_POWER_HIGH) {
+        _bat = BLINKER_BAT_POWER_HIGH;
     }
 
-    uint8_t drawBat = (_bat - 3.8) / (4.2 - 3.8) * 14;
+    uint8_t drawBat = (_bat - BLINKER_BAT_POWER_LOW) / (BLINKER_BAT_POWER_HIGH - BLINKER_BAT_POWER_LOW) * 14;
     u8g2.drawRFrame(108, 52, 18, 10, 2);
     u8g2.drawBox(110, 54, drawBat, 6);
     u8g2.drawLine(127, 55, 127, 58);
