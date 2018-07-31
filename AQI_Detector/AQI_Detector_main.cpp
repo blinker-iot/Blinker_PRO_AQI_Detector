@@ -26,7 +26,7 @@
 
 static bool inited = false;
 static bool isAQI = true;
-static bool isReset = false;
+static bool isLongPress = false;
 
 /* 
  * Add your command parse code in this function
@@ -105,16 +105,25 @@ void heartbeat()
     Blinker.print("langauage", getLanguage());
     Blinker.print("timezone", Blinker.getTimezone());
 
-    String values = "{\"pm1.0\":" + STRING_format(pm1_0Get()) + \
-                    ",\"pm2.5\":" + STRING_format(pm2_5Get()) + \
-                    ",\"pm10\":" + STRING_format(pm10_0Get()) + \
-                    ",\"hcho\":" + STRING_format(hchoGet()) + \
-                    ",\"temp\":" + STRING_format(tempGet()) + \
-                    ",\"humi\":" + STRING_format(humiGet()) + \
-                    ",\"AQICN\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_CN)) + \
-                    ",\"AQIUS\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_US)) + "}";
+    Blinker.print("pm1.0", pm1_0Get());
+    Blinker.print("pm2.5", pm2_5Get());
+    Blinker.print("pm10", pm10_0Get());
+    Blinker.print("hcho", hchoGet());
+    Blinker.print("temp", tempGet());
+    Blinker.print("humi", humiGet());
+    Blinker.print("AQICN", aqiLevelGet(BLINKER_AQI_BASE_CN));
+    Blinker.print("AQIUS", aqiLevelGet(BLINKER_AQI_BASE_US));
 
-    Blinker.printObject("detector", values);
+    // String values = "{\"pm1.0\":" + STRING_format(pm1_0Get()) + \
+    //                 ",\"pm2.5\":" + STRING_format(pm2_5Get()) + \
+    //                 ",\"pm10\":" + STRING_format(pm10_0Get()) + \
+    //                 ",\"hcho\":" + STRING_format(hchoGet()) + \
+    //                 ",\"temp\":" + STRING_format(tempGet()) + \
+    //                 ",\"humi\":" + STRING_format(humiGet()) + \
+    //                 ",\"AQICN\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_CN)) + \
+    //                 ",\"AQIUS\":" + STRING_format(aqiLevelGet(BLINKER_AQI_BASE_US)) + "}";
+
+    // Blinker.printObject("detector", values);
 
     BLINKER_LOG1("heartbeat!");
 }
@@ -169,24 +178,25 @@ void doubleClick()
  * 
  * When long press start, device will call this function
  */
-// void longPressStart()
-// {
-//     // isReset = true;
-//     freshDisplay();
+void longPressStart()
+{
+    isLongPress = true;
+    freshDisplay();
 
-//     BLINKER_LOG1("Button long press start!");
-// }
+    BLINKER_LOG1("Button long press start!");
+}
 
 void longPressPowerdown()
 {
     freshDisplay();
 
     BLINKER_LOG1("Button long press powerdown!");
+
+    digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
 
 void longPressReset()
 {
-    isReset = true;
     freshDisplay();
 
     BLINKER_LOG1("Button long press reset!");
@@ -204,8 +214,8 @@ void getBAT()
     sensorValue += analogRead(A0);
     sensorValue += analogRead(A0);
     float voltage = sensorValue * (5.926 / 1023.0 / 8.0);
-    BLINKER_LOG2("bat: ", voltage);
 
+    BLINKER_LOG2("bat: ", voltage);
 }
 
 void AQI_init()
@@ -228,7 +238,7 @@ void AQI_init()
 #if defined(BLINKER_BUTTON)
     Blinker.attachClick(singalClick);
     Blinker.attachDoubleClick(doubleClick);
-    // Blinker.attachLongPressStart(longPressStart);
+    Blinker.attachLongPressStart(longPressStart);
     Blinker.attachLongPressPowerdown(longPressPowerdown);
     Blinker.attachLongPressReset(longPressReset);
 
@@ -261,7 +271,7 @@ void changeMain()
 
 void display()
 {
-    if (!isReset) {
+    if (!isLongPress) {
         if (isAQI) {
             aqiDisplay(pm1_0Get(), pm2_5Get(), pm10_0Get(), humiGet(),
                     hchoGet(), tempGet(), Blinker.hour(), Blinker.minute());
@@ -297,7 +307,7 @@ void aqiFresh()
         if (initDisplay()) {
             Blinker.delay(5);
         }
-        else if (isReset) {
+        else if (isLongPress) {
             freshDisplay();
         }
         else {

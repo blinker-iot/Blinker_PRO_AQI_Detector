@@ -411,8 +411,9 @@ void resetDisplay()
     u8g2.print("blinker");
     u8g2.drawLine(0, 46, 128, 46);
     u8g2.setFont(u8g2_font_helvR10_te);
-    u8g2.setCursor(40, 63);
-    u8g2.print("Reset ...");
+    // u8g2.setCursor(40, 63);
+    u8g2.setCursor(0, 63);
+    u8g2.print("Power Down or Reset!");
     // u8g2.sendBuffer();
 }
 
