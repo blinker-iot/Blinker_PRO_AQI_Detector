@@ -3,7 +3,7 @@
 
 #include "arduino.h"
 
-void getBAT();
+double getBAT();
 
 void AQI_init();
 

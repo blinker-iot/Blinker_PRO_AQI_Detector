@@ -27,6 +27,7 @@
 static bool inited = false;
 static bool isAQI = true;
 static bool isLongPress = false;
+static double batRead;
 
 /* 
  * Add your command parse code in this function
@@ -150,9 +151,9 @@ void singalClick()
 {
     changeDetail();
 
-    if (inited) {
+    // if (inited) {
         freshDisplay();
-    }
+    // }
 
     BLINKER_LOG1("Button clicked!");
 }
@@ -166,9 +167,9 @@ void doubleClick()
 {
     changeMain();
 
-    if (inited) {
+    // if (inited) {
         freshDisplay();
-    }
+    // }
 
     BLINKER_LOG1("Button double clicked!");
 }
@@ -203,7 +204,7 @@ void longPressReset()
 }
 #endif
 
-void getBAT()
+double getBAT()
 {
     int sensorValue = analogRead(A0);
     sensorValue += analogRead(A0);
@@ -213,9 +214,11 @@ void getBAT()
     sensorValue += analogRead(A0);
     sensorValue += analogRead(A0);
     sensorValue += analogRead(A0);
-    float voltage = sensorValue * (5.926 / 1023.0 / 8.0);
+    double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
 
-    BLINKER_LOG2("bat: ", voltage);
+    // BLINKER_LOG2("bat: ", voltage);
+
+    return voltage;
 }
 
 void AQI_init()
@@ -226,6 +229,8 @@ void AQI_init()
     digitalWrite(BLINKER_POWER_3V3_PIN, HIGH); //自身3.3V控制
     pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
     digitalWrite(BLINKER_POWER_5V_PIN, HIGH); //5V升压控制
+
+    batRead = getBAT();
 
     u8g2Init();
     pmsInit();
@@ -259,7 +264,8 @@ void AQI_run()
 
     if ((millis() - fresh) > 10000)
     {
-        getBAT();
+        batRead = getBAT();
+        BLINKER_LOG2("bat: ", batRead);
         fresh = millis();
     }
 }
@@ -272,6 +278,8 @@ void changeMain()
 void display()
 {
     if (!isLongPress) {
+        batDisplay(batRead);
+        
         if (isAQI) {
             aqiDisplay(pm1_0Get(), pm2_5Get(), pm10_0Get(), humiGet(),
                     hchoGet(), tempGet(), Blinker.hour(), Blinker.minute());
@@ -292,27 +300,25 @@ bool checkInit()
         if (Blinker.inited()) {
             setTimeLimit(1000UL);
             inited = true;
-            return true;
         }
-        return false;
     }
-    else {
-        return true;
-    }
+    
+    return inited;
 }
 
 void aqiFresh()
 {
     if (!checkInit()) {
         if (initDisplay()) {
-            Blinker.delay(5);
+            Blinker.delay(1);
         }
         else if (isLongPress) {
             freshDisplay();
         }
         else {
-            pmsFresh();
-            freshDisplay();
+            if (pmsFresh()) {
+                freshDisplay();
+            }
         }
     }
     else {

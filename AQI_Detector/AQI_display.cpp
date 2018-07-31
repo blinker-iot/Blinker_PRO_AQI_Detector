@@ -244,6 +244,18 @@ static void colorDisplay()
     }
 }
 
+void batDisplay(double _bat)
+{
+    if (_bat > 4.2) {
+        _bat = 4.2;
+    }
+
+    uint8_t drawBat = (_bat - 3.8) / (4.2 - 3.8) * 14;
+    u8g2.drawRFrame(108, 52, 18, 10, 2);
+    u8g2.drawBox(110, 54, drawBat, 6);
+    u8g2.drawLine(127, 55, 127, 58);
+}
+
 void aqiDisplay(uint16_t _pm1_0, uint16_t _pm2_5, uint16_t _pm10_0, double _humi, 
             double _hcho, double _temp, int8_t _hour, int8_t _min)
 {
@@ -311,7 +323,9 @@ void aqiDisplay(uint16_t _pm1_0, uint16_t _pm2_5, uint16_t _pm10_0, double _humi
     
     // if (getTimerTimingState() == "true")
     //     u8g2.drawXBMP(95, 51, 11, 12, alarmClock);
-    u8g2.drawXBMP(110, 51, 17, 12, signalSymbols[getSignals()]);//signalSymbols[(uint8_t)random(0,4)]
+    // u8g2.drawXBMP(110, 51, 17, 12, signalSymbols[getSignals()]);//signalSymbols[(uint8_t)random(0,4)]
+    u8g2.drawXBMP(88, 51, 17, 12, signalSymbols[getSignals()]);//signalSymbols[(uint8_t)random(0,4)]
+    // batDisplay();
     u8g2.sendBuffer();
 }
 
@@ -386,7 +400,9 @@ void timeDisplay(uint16_t _pm2_5, int8_t _mon, int8_t _mday,
 
     // if (getTimerTimingState() == "true")
     //     u8g2.drawXBMP(95, 51, 11, 12, alarmClock);
-    u8g2.drawXBMP(110, 51, 17, 12, signalSymbols[getSignals()]);
+    // u8g2.drawXBMP(110, 51, 17, 12, signalSymbols[getSignals()]);
+    u8g2.drawXBMP(88, 51, 17, 12, signalSymbols[getSignals()]);
+    // batDisplay();
     u8g2.sendBuffer();
 }
 
@@ -425,7 +441,7 @@ bool initDisplay()
 
     u8g2.drawLine(0, 46, initProgressBar, 46);
     u8g2.sendBuffer();
-    initProgressBar++;
+    initProgressBar += 4;
     
     return true;
 }

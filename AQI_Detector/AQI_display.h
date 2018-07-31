@@ -40,6 +40,8 @@ static String months(uint8_t mons);
 
 static void colorDisplay();
 
+void batDisplay(double _bat);
+
 void aqiDisplay(uint16_t _pm1_0, uint16_t _pm2_5, uint16_t _pm10_0, double _humi, 
             double _hcho, double _temp, int8_t _hour, int8_t _min);
 
