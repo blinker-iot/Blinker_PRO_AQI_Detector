@@ -413,7 +413,7 @@ void resetDisplay()
     u8g2.setFont(u8g2_font_helvR10_te);
     // u8g2.setCursor(40, 63);
     u8g2.setCursor(0, 63);
-    u8g2.print("Power Down or Reset!");
+    u8g2.print("PowerDown / Reset!");
     // u8g2.sendBuffer();
 }
 
