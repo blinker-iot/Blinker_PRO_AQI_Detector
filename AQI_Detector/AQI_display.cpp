@@ -92,16 +92,8 @@ void attachColor(callbackFunction_arg_u8 _func)
     _colorFunc = _func;
 }
 
-void freshDisplay(bool longPress)
+void freshDisplay()
 {
-    if (!longPress) {
-        colorDisplay();
-    }
-    else {
-        pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
-        pixels.show();
-    }
-
     u8g2.setContrast(targetContrast);
 
     u8g2.firstPage();
@@ -110,6 +102,8 @@ void freshDisplay(bool longPress)
             _diplayFunc();
         }
     } while ( u8g2.nextPage() );
+
+    colorDisplay();
 }
 
 void changeDetail()
@@ -427,6 +421,8 @@ void initPage()
 
 void resetDisplay()
 {
+    pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
+    pixels.show();
     // u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_helvR24_tr);
     u8g2.setCursor(18, 34);

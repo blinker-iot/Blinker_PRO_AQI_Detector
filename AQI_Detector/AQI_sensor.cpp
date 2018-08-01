@@ -13,7 +13,7 @@
 BLINKER_PMSX003ST pms;
 
 uint32_t PMS_TIME_FRESH = 0;
-uint16_t PMS_TIME_LIMIT = 30000UL;
+uint16_t PMS_TIME_LIMIT = BLINKER_PMS_LIMIT_INIT;
 
 uint16_t pm1_0Get()
 {
@@ -57,7 +57,7 @@ void setTimeLimit(uint16_t _time)
 
 bool pmsFresh()
 {
-    if (millis() - PMS_TIME_FRESH >= PMS_TIME_LIMIT) {
+    if (millis() - PMS_TIME_FRESH >= PMS_TIME_LIMIT || PMS_TIME_FRESH == 0) {
 #ifndef ESP32
         if (!pmsSerial.isListening()) {
             pmsSerial.listen();
@@ -66,11 +66,10 @@ bool pmsFresh()
 #endif
 
         pms.request();
-        if(!pms.read()){
-            return false;
+        while (!pms.read()){
+            // return false;
+            PMS_TIME_FRESH = millis();
         }
-
-        PMS_TIME_FRESH = millis();
         return true;
     }
     else {
@@ -84,5 +83,5 @@ void pmsInit()
     pms.begin(pmsSerial);
     pms.setMode(PASSIVE);
 
-    setTimeLimit(30000UL);
+    setTimeLimit(BLINKER_PMS_LIMIT_INIT);
 }

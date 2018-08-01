@@ -28,7 +28,7 @@ static bool inited = false;
 static bool initDisplayed = false;
 static bool isAQI = true;
 static bool isLongPress = false;
-static double batRead;
+static uint8_t batRead;
 static uint32_t batFresh = 0;
 
 /* 
@@ -184,7 +184,7 @@ void doubleClick()
 void longPressStart()
 {
     isLongPress = true;
-    freshDisplay(isLongPress);
+    freshDisplay();
 
     BLINKER_LOG1("Button long press start!");
 }
@@ -196,7 +196,7 @@ void longPressStart()
  */
 void longPressPowerdown()
 {
-    freshDisplay(isLongPress);
+    freshDisplay();
 
     BLINKER_LOG1("Button long press powerdown!");
 
@@ -210,7 +210,7 @@ void longPressPowerdown()
  */
 void longPressReset()
 {
-    freshDisplay(isLongPress);
+    freshDisplay();
 
     BLINKER_LOG1("Button long press reset!");
 }
@@ -238,11 +238,11 @@ void batCheck()
 {
     if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
     {
-        batRead = getBAT();
-        BLINKER_LOG2("bat: ", batRead);
+        batRead = getBAT() * 10;
+        BLINKER_LOG3("bat: ", batRead / 10.0, " v");
         batFresh = millis();
 
-        if (batRead < BLINKER_BAT_POWER_LOW) {
+        if (batRead < BLINKER_BAT_POWER_LOW * 10) {
             digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
         }
     }
@@ -255,7 +255,7 @@ void hardwareInit()
     pinMode(BLINKER_POWER_5V_PIN, OUTPUT);
     digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
 
-    batRead = getBAT();
+    batRead = getBAT() * 10;
 }
 
 void AQI_init()
@@ -302,7 +302,7 @@ void changeMain()
 void display()
 {
     if (!isLongPress) {
-        batDisplay(batRead);
+        batDisplay(batRead / 10.0);
 
         if (isAQI) {
             aqiDisplay(pm1_0Get(), pm2_5Get(), pm10_0Get(), humiGet(),
@@ -322,7 +322,7 @@ bool checkInit()
 {
     if (!inited) {
         if (Blinker.inited()) {
-            setTimeLimit(1000UL);
+            setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
             inited = true;
         }
     }
@@ -336,9 +336,6 @@ void aqiFresh()
         if (initDisplay()) {
             Blinker.delay(1);
         }
-        else if (isLongPress) {
-            freshDisplay(isLongPress);
-        }
         else {
             initDisplayed = true;
 
@@ -350,6 +347,6 @@ void aqiFresh()
     else {
         pmsFresh();
         
-        freshDisplay(isLongPress);
+        freshDisplay();
     }
 }

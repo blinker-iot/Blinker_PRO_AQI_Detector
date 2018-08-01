@@ -6,6 +6,7 @@
  * https://doc.blinker.app/
  * 
  * Written by i3water for blinker.
+ * 
  * Learn more:https://blinker.app/
  */
 

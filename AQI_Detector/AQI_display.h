@@ -24,7 +24,7 @@ void attachDisplay(callbackFunction _func);
 
 void attachColor(callbackFunction_arg_u8 _func);
 
-void freshDisplay(bool longPress = false);
+void freshDisplay();
 
 void changeDetail();
 
