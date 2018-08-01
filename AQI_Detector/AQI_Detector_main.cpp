@@ -25,6 +25,7 @@
 #include "AQI_sensor.h"
 
 static bool inited = false;
+static bool initDisplayed = false;
 static bool isAQI = true;
 static bool isLongPress = false;
 static double batRead;
@@ -152,9 +153,9 @@ void singalClick()
 {
     changeDetail();
 
-    // if (inited) {
+    if (initDisplayed) {
         freshDisplay();
-    // }
+    }
 
     BLINKER_LOG1("Button clicked!");
 }
@@ -168,9 +169,9 @@ void doubleClick()
 {
     changeMain();
 
-    // if (inited) {
+    if (initDisplayed) {
         freshDisplay();
-    // }
+    }
 
     BLINKER_LOG1("Button double clicked!");
 }
@@ -183,7 +184,7 @@ void doubleClick()
 void longPressStart()
 {
     isLongPress = true;
-    freshDisplay();
+    freshDisplay(isLongPress);
 
     BLINKER_LOG1("Button long press start!");
 }
@@ -195,7 +196,7 @@ void longPressStart()
  */
 void longPressPowerdown()
 {
-    freshDisplay();
+    freshDisplay(isLongPress);
 
     BLINKER_LOG1("Button long press powerdown!");
 
@@ -209,7 +210,7 @@ void longPressPowerdown()
  */
 void longPressReset()
 {
-    freshDisplay();
+    freshDisplay(isLongPress);
 
     BLINKER_LOG1("Button long press reset!");
 }
@@ -336,9 +337,11 @@ void aqiFresh()
             Blinker.delay(1);
         }
         else if (isLongPress) {
-            freshDisplay();
+            freshDisplay(isLongPress);
         }
         else {
+            initDisplayed = true;
+
             if (pmsFresh()) {
                 freshDisplay();
             }
@@ -346,6 +349,7 @@ void aqiFresh()
     }
     else {
         pmsFresh();
-        freshDisplay();
+        
+        freshDisplay(isLongPress);
     }
 }

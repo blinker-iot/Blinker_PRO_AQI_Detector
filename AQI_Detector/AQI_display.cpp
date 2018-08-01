@@ -92,9 +92,15 @@ void attachColor(callbackFunction_arg_u8 _func)
     _colorFunc = _func;
 }
 
-void freshDisplay()
+void freshDisplay(bool longPress)
 {
-    colorDisplay();
+    if (!longPress) {
+        colorDisplay();
+    }
+    else {
+        pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
+        pixels.show();
+    }
 
     u8g2.setContrast(targetContrast);
 
@@ -414,7 +420,7 @@ void initPage()
     u8g2.print("blinker");
     // u8g2.drawLine(0, 46, 128, 46);
     u8g2.setFont(u8g2_font_helvR10_te);
-    u8g2.setCursor(0, 63);
+    u8g2.setCursor(1, 63);
     u8g2.print("blinker AQI detector");
     u8g2.sendBuffer();
 }
@@ -436,6 +442,7 @@ void resetDisplay()
 bool initDisplay()
 {
     if (initProgressBar > 128) {
+        freshDisplay();
         return false;
     }
 
@@ -452,7 +459,10 @@ void u8g2Init()
 
     u8g2.begin();
     u8g2.setFlipMode(0);
-    u8g2.enableUTF8Print();    
+    u8g2.enableUTF8Print();
+
+    pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
+    pixels.show();
 
     initPage();
 }

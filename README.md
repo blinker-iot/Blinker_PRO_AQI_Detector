@@ -11,6 +11,7 @@ You should have the following ready before beginning with any board:
 * Install the [blinker-library](https://github.com/blinker-iot/blinker-library) via the Arduino Library Manager  
 * Install the [U8g2_Arduino](https://github.com/olikraus/U8g2_Arduino) via the Arduino Library Manager  
 * Install the [Adafruit_NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel) via the Arduino Library Manager  
+* Install the [Blinker_PMSX003ST](https://github.com/i3water/Blinker_PMSX003ST) via the Arduino Library Manager  
 
 
 # Hardware Needs
