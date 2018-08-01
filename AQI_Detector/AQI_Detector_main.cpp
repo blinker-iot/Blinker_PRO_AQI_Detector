@@ -241,10 +241,10 @@ void batCheck()
     {
         batRead = getBAT() * 10;
 
-        if (batBase - batRead > BLINKER_BAT_POWER_USEUP) {
+        if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
             batBase = batRead;
             BLINKER_ERR_LOG1("BLINKER_BAT_POWER_USEUP");
-            
+            BLINKER_LOG6("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
         }
         else {
             if (batRead > batBase) batBase = batRead;
