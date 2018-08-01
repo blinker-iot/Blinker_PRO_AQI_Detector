@@ -29,6 +29,7 @@ static bool initDisplayed = false;
 static bool isAQI = true;
 static bool isLongPress = false;
 static uint8_t batRead;
+static uint8_t batBase;
 static uint32_t batFresh = 0;
 
 /* 
@@ -239,7 +240,19 @@ void batCheck()
     if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
     {
         batRead = getBAT() * 10;
+
+        if (batBase - batRead > BLINKER_BAT_POWER_USEUP) {
+            batBase = batRead;
+            BLINKER_ERR_LOG1("BLINKER_BAT_POWER_USEUP");
+            
+        }
+        else {
+            if (batRead > batBase) batBase = batRead;
+        }
+        
         BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+        // BLINKER_LOG_FreeHeap();
+
         batFresh = millis();
 
         if (batRead < BLINKER_BAT_POWER_LOW * 10) {
