@@ -50,6 +50,11 @@ uint8_t aqiLevelGet(uint8_t _base)
     return pms.getAQILevel(_base);
 }
 
+uint8_t aqiGet(uint8_t _base)
+{
+    return pms.getAQI(_base);
+}
+
 void setTimeLimit(uint16_t _time)
 {
     PMS_TIME_LIMIT = _time;

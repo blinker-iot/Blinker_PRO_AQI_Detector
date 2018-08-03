@@ -17,6 +17,8 @@ double tempGet();
 
 uint8_t aqiLevelGet(uint8_t _base);
 
+uint8_t aqiGet(uint8_t _base);
+
 void setTimeLimit(uint16_t _time);
 
 bool pmsFresh();

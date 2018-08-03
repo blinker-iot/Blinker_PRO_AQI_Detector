@@ -115,8 +115,8 @@ void heartbeat()
     Blinker.print("hcho", hchoGet());
     Blinker.print("temp", tempGet());
     Blinker.print("humi", humiGet());
-    Blinker.print("AQICN", aqiLevelGet(BLINKER_AQI_BASE_CN));
-    Blinker.print("AQIUS", aqiLevelGet(BLINKER_AQI_BASE_US));
+    Blinker.print("AQICN", aqiGet(BLINKER_AQI_BASE_CN));
+    Blinker.print("AQIUS", aqiGet(BLINKER_AQI_BASE_US));
 
     // String values = "{\"pm1.0\":" + STRING_format(pm1_0Get()) + \
     //                 ",\"pm2.5\":" + STRING_format(pm2_5Get()) + \
@@ -252,6 +252,19 @@ void batCheck()
         
         BLINKER_LOG3("bat: ", batRead / 10.0, " v");
         // BLINKER_LOG_FreeHeap();
+
+        // BLINKER_LOG2("aqibase", getAQIbase());
+        // BLINKER_LOG2("langauage", getLanguage());
+        // BLINKER_LOG2("timezone", Blinker.getTimezone());
+
+        BLINKER_LOG2("pm1.0: ", pm1_0Get());
+        BLINKER_LOG2("pm2.5: ", pm2_5Get());
+        BLINKER_LOG2("pm10: ", pm10_0Get());
+        BLINKER_LOG2("hcho: ", hchoGet());
+        BLINKER_LOG2("temp: ", tempGet());
+        BLINKER_LOG2("humi: ", humiGet());
+        BLINKER_LOG2("AQICN: ", aqiGet(BLINKER_AQI_BASE_CN));
+        BLINKER_LOG2("AQIUS: ", aqiGet(BLINKER_AQI_BASE_US));
 
         batFresh = millis();
 
