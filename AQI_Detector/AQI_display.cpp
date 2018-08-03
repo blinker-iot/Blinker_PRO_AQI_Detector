@@ -251,6 +251,9 @@ void batDisplay(double _bat)
     }
 
     uint8_t drawBat = (_bat - BLINKER_BAT_POWER_LOW) / (BLINKER_BAT_POWER_HIGH - BLINKER_BAT_POWER_LOW) * 14;
+
+    if (drawBat > 14) drawBat = 14;
+
     u8g2.drawRFrame(108, 52, 18, 10, 2);
     u8g2.drawBox(110, 54, drawBat, 6);
     u8g2.drawLine(127, 55, 127, 58);
@@ -438,7 +441,6 @@ void resetDisplay()
 bool initDisplay()
 {
     if (initProgressBar > 128) {
-        freshDisplay();
         return false;
     }
 
