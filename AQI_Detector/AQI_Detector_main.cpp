@@ -193,6 +193,18 @@ void longPressStart()
 /* 
  * Add your code in this function
  * 
+ * When long press stop, device will call this function
+ */
+void attachLongPressStop()
+{
+    isLongPress = false;
+    freshDisplay();
+
+    BLINKER_LOG1("Button long press start!");
+}
+/* 
+ * Add your code in this function
+ * 
  * When long press stop and trigged POWERDOWN, device will call this function
  */
 void longPressPowerdown()
@@ -282,6 +294,7 @@ void hardwareInit()
     digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
 
     batRead = getBAT() * 10;
+    // batRead = 40;
 }
 
 void AQI_init()
@@ -340,7 +353,7 @@ void display()
         }
     }
     else {
-        resetDisplay();
+        resetDisplay(Blinker.pressedTime());
     }
 }
 
@@ -358,7 +371,10 @@ bool checkInit()
 
 void aqiFresh()
 {
-    if (!checkInit()) {
+    if (isLongPress) {
+        freshDisplay();
+    }
+    else if (!checkInit()) {
         if (initDisplay()) {
             Blinker.delay(1);
         }

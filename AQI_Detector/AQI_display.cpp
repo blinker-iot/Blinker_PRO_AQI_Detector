@@ -24,7 +24,7 @@ static bool isDisplayDetail = false;
 static uint8_t displayLanguage = BLINKER_LANGUAGE_CN;
 static uint8_t initProgressBar = 0;
 static uint8_t targetContrast = 255;
-static uint8_t AQI_BASE = 0;
+static uint8_t AQI_BASE = BLINKER_AQI_BASE_CN;
 static callbackFunction _diplayFunc;
 static callbackFunction_arg_u8 _colorFunc;
 
@@ -279,13 +279,13 @@ void aqiDisplay(uint16_t _pm1_0, uint16_t _pm2_5, uint16_t _pm10_0, double _humi
             u8g2.setCursor(0, 27);
             u8g2.print("PM2.5:" + pm25data);
             u8g2.setCursor(0, 41);
-            u8g2.print("_pm1_0:" + pm100data);
+            u8g2.print("PM10:" + pm100data);
 
-            u8g2.setCursor(80, 13);
+            u8g2.setCursor(78, 13);
             u8g2.print("FA:" + String(_hcho));
-            u8g2.setCursor(80, 27);
+            u8g2.setCursor(78, 27);
             u8g2.print("RH:" + humidata + "%");
-            u8g2.setCursor(80, 41);
+            u8g2.setCursor(78, 41);
             u8g2.print("TP:" + tempdata + "°");//°C
         }
         else {
@@ -422,20 +422,56 @@ void initPage()
     u8g2.sendBuffer();
 }
 
-void resetDisplay()
+void resetDisplay(uint16_t _time)
 {
-    pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
-    pixels.show();
-    // u8g2.clearBuffer();
-    u8g2.setFont(u8g2_font_helvR24_tr);
-    u8g2.setCursor(18, 34);
-    u8g2.print("blinker");
-    u8g2.drawLine(0, 46, 128, 46);
-    u8g2.setFont(u8g2_font_helvR10_te);
-    // u8g2.setCursor(40, 63);
-    u8g2.setCursor(0, 63);
-    u8g2.print("PowerDown / Reset!");
-    // u8g2.sendBuffer();
+    if (displayLanguage) {
+        pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
+        pixels.show();
+        u8g2.setFont(u8g2_font_helvR10_te);
+        u8g2.setCursor(64 - helvR10_w * 5, 20);
+        u8g2.print("Power down");
+        u8g2.setCursor(26, 45);
+        u8g2.print("Realse to reset");
+        u8g2.setCursor(4, 45);
+        u8g2.print(String(10 - _time / 1000)+"s");
+
+        u8g2.drawLine(0, 54, 128 * _time / 10000, 54);
+        // u8g2.clearBuffer();
+        // u8g2.setFont(u8g2_font_helvR24_tr);
+        // u8g2.setCursor(18, 34);
+        // u8g2.print("blinker");
+        // u8g2.drawLine(0, 46, 128, 46);
+        // u8g2.setFont(u8g2_font_helvR10_te);
+        // // u8g2.setCursor(40, 63);
+        // u8g2.setCursor(0, 63);
+        // u8g2.print("PowerDown / Reset!");
+        // u8g2.sendBuffer();
+    }
+    else {
+        pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
+        pixels.show();
+        u8g2.setFont(u8g2_font_wqy14_cn);
+        u8g2.setCursor(64 - wqy14_w * 3, 20);
+        u8g2.print("释放即可关机");
+        u8g2.setCursor(64 - wqy14_w * 2, 45);
+        u8g2.print("后释放将重置");
+
+        u8g2.setFont(u8g2_font_helvR10_tf);//14x15 u8g2_font_helvR10_tf
+        u8g2.setCursor(64 - wqy14_w * 2 - helvR10_w * 3, 45);
+        u8g2.print(String(10 - _time / 1000)+"s");
+
+        u8g2.drawLine(0, 54, 128 * _time / 10000, 54);
+        // // u8g2.clearBuffer();
+        // u8g2.setFont(u8g2_font_helvR24_tr);
+        // u8g2.setCursor(18, 34);
+        // u8g2.print("blinker");
+        // u8g2.drawLine(0, 46, 128, 46);
+        // u8g2.setFont(u8g2_font_helvR10_te);
+        // // u8g2.setCursor(40, 63);
+        // u8g2.setCursor(0, 63);
+        // u8g2.print("PowerDown / Reset!");
+        // // u8g2.sendBuffer();
+    }
 }
 
 bool initDisplay()

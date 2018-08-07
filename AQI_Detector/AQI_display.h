@@ -50,7 +50,7 @@ void timeDisplay(uint16_t _pm2_5, int8_t _mon, int8_t _mday,
 
 void initPage();
 
-void resetDisplay();
+void resetDisplay(uint16_t _time);
 
 bool initDisplay();
 
