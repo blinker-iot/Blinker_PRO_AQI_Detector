@@ -71,10 +71,14 @@ bool pmsFresh()
 #endif
 
         pms.request();
-        while (!pms.read()){
-            // return false;
-            PMS_TIME_FRESH = millis();
+        // while (!pms.read()){
+        //     // return false;
+        //     PMS_TIME_FRESH = millis();
+        // }
+        if (!pms.read()){
+            return false;
         }
+        PMS_TIME_FRESH = millis();
         return true;
     }
     else {
