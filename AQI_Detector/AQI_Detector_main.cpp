@@ -31,6 +31,27 @@ static bool isLongPress = false;
 static uint8_t batRead;
 static uint8_t batBase;
 static uint32_t batFresh = 0;
+Ticker pushTicker;
+
+void aqiStorage()
+{
+    BLINKER_LOG1("push ticker trigged");
+
+    Blinker.dataStorage("pm1.0", pm1_0Get());
+    Blinker.dataStorage("pm2.5", pm2_5Get());
+    Blinker.dataStorage("pm10", pm10_0Get());
+    Blinker.dataStorage("hcho", hchoGet());
+    Blinker.dataStorage("temp", tempGet());
+    Blinker.dataStorage("humi", humiGet());
+
+    if (WiFi.status() == WL_CONNECTED) {
+        Blinker.dataUpdate();
+
+        BLINKER_LOG1("Blinker.dataUpdate()");
+    }
+
+    pushTicker.once(3600, aqiStorage);
+}
 
 /* 
  * Add your command parse code in this function
@@ -262,21 +283,21 @@ void batCheck()
             if (batRead > batBase) batBase = batRead;
         }
         
-        BLINKER_LOG3("bat: ", batRead / 10.0, " v");
-        // BLINKER_LOG_FreeHeap();
+        // BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+        // // BLINKER_LOG_FreeHeap();
 
-        // BLINKER_LOG2("aqibase", getAQIbase());
-        // BLINKER_LOG2("langauage", getLanguage());
-        // BLINKER_LOG2("timezone", Blinker.getTimezone());
+        // // BLINKER_LOG2("aqibase", getAQIbase());
+        // // BLINKER_LOG2("langauage", getLanguage());
+        // // BLINKER_LOG2("timezone", Blinker.getTimezone());
 
-        BLINKER_LOG2("pm1.0: ", pm1_0Get());
-        BLINKER_LOG2("pm2.5: ", pm2_5Get());
-        BLINKER_LOG2("pm10: ", pm10_0Get());
-        BLINKER_LOG2("hcho: ", hchoGet());
-        BLINKER_LOG2("temp: ", tempGet());
-        BLINKER_LOG2("humi: ", humiGet());
-        BLINKER_LOG2("AQICN: ", aqiGet(BLINKER_AQI_BASE_CN));
-        BLINKER_LOG2("AQIUS: ", aqiGet(BLINKER_AQI_BASE_US));
+        // BLINKER_LOG2("pm1.0: ", pm1_0Get());
+        // BLINKER_LOG2("pm2.5: ", pm2_5Get());
+        // BLINKER_LOG2("pm10: ", pm10_0Get());
+        // BLINKER_LOG2("hcho: ", hchoGet());
+        // BLINKER_LOG2("temp: ", tempGet());
+        // BLINKER_LOG2("humi: ", humiGet());
+        // BLINKER_LOG2("AQICN: ", aqiGet(BLINKER_AQI_BASE_CN));
+        // BLINKER_LOG2("AQIUS: ", aqiGet(BLINKER_AQI_BASE_US));
 
         batFresh = millis();
 
@@ -294,6 +315,8 @@ void hardwareInit()
     digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
 
     batRead = getBAT() * 10;
+
+    pushTicker.once(3600, aqiStorage);
     // batRead = 40;
 }
 
@@ -357,12 +380,24 @@ void display()
     }
 }
 
+void freshPush()
+{
+    pushTicker.detach();
+
+    uint16_t nextSecond = 3600 - (Blinker.minute() * 60 + Blinker.second());
+    pushTicker.once(nextSecond, aqiStorage);
+
+    BLINKER_LOG4("fresh push ticker ", nextSecond, ", ", Blinker.minute() * 60 + Blinker.second());
+}
+
 bool checkInit()
 {
     if (!inited) {
-        if (Blinker.inited()) {
+        if (Blinker.init()) {
             setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
             inited = true;
+
+            freshPush();
         }
     }
     
