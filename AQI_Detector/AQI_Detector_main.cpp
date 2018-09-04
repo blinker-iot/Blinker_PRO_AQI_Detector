@@ -44,13 +44,13 @@ void aqiStorage()
     Blinker.dataStorage("temp", tempGet());
     Blinker.dataStorage("humi", humiGet());
 
-    if (WiFi.status() == WL_CONNECTED) {
+    if (WiFi.status() == WL_CONNECTED && checkInit()) {
         Blinker.dataUpdate();
 
         BLINKER_LOG1("Blinker.dataUpdate()");
     }
 
-    pushTicker.once(3600, aqiStorage);
+    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
 }
 
 /* 
@@ -283,8 +283,8 @@ void batCheck()
             if (batRead > batBase) batBase = batRead;
         }
         
-        // BLINKER_LOG3("bat: ", batRead / 10.0, " v");
-        // // BLINKER_LOG_FreeHeap();
+        BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+        BLINKER_LOG_FreeHeap();
 
         // // BLINKER_LOG2("aqibase", getAQIbase());
         // // BLINKER_LOG2("langauage", getLanguage());
@@ -302,7 +302,7 @@ void batCheck()
         batFresh = millis();
 
         if (batRead < BLINKER_BAT_POWER_LOW * 10) {
-            digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
+            // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
         }
     }
 }
@@ -316,7 +316,7 @@ void hardwareInit()
 
     batRead = getBAT() * 10;
 
-    pushTicker.once(3600, aqiStorage);
+    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
     // batRead = 40;
 }
 
@@ -380,15 +380,15 @@ void display()
     }
 }
 
-void freshPush()
-{
-    pushTicker.detach();
+// void freshPush()
+// {
+//     pushTicker.detach();
 
-    uint16_t nextSecond = 3600 - (Blinker.minute() * 60 + Blinker.second());
-    pushTicker.once(nextSecond, aqiStorage);
+//     uint16_t nextSecond = 3600 - (Blinker.minute() * 60 + Blinker.second());
+//     pushTicker.once(nextSecond, aqiStorage);
 
-    BLINKER_LOG4("fresh push ticker ", nextSecond, ", ", Blinker.minute() * 60 + Blinker.second());
-}
+//     BLINKER_LOG4("fresh push ticker ", nextSecond, ", ", Blinker.minute() * 60 + Blinker.second());
+// }
 
 bool checkInit()
 {
@@ -397,7 +397,7 @@ bool checkInit()
             setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
             inited = true;
 
-            freshPush();
+            // freshPush();
         }
     }
     
