@@ -50,7 +50,7 @@ void aqiStorage()
         BLINKER_LOG1("Blinker.dataUpdate()");
     }
 
-    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
+    // pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
 }
 
 /* 
@@ -284,6 +284,9 @@ void batCheck()
         }
         
         BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+        int32_t wRSSI = WiFi.RSSI();
+
+        BLINKER_LOG4("getSignals: ", wRSSI, " , WiFi.status: ", WiFi.status() == WL_CONNECTED);
         BLINKER_LOG_FreeHeap();
 
         // // BLINKER_LOG2("aqibase", getAQIbase());
@@ -316,7 +319,7 @@ void hardwareInit()
 
     batRead = getBAT() * 10;
 
-    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
+    // pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
     // batRead = 40;
 }
 
@@ -390,6 +393,8 @@ void display()
 //     BLINKER_LOG4("fresh push ticker ", nextSecond, ", ", Blinker.minute() * 60 + Blinker.second());
 // }
 
+uint32_t fresh_time = 0;
+
 bool checkInit()
 {
     if (!inited) {
@@ -398,8 +403,17 @@ bool checkInit()
             inited = true;
 
             // freshPush();
+
+            // String get_aqi = Blinker.aqi();
+            // BLINKER_LOG2("AQI: ", get_aqi);
+            fresh_time = millis();
+            aqiStorage();
         }
     }
+    // else if(inited && (millis() - fresh_time) > 30000) {
+    //     fresh_time = millis();
+    //     aqiStorage();
+    // }
     
     return inited;
 }
