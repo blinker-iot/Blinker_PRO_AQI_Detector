@@ -28,6 +28,7 @@ static bool inited = false;
 static bool initDisplayed = false;
 static bool isAQI = true;
 static bool isLongPress = false;
+static bool tickerTrigged = false;
 static uint8_t batRead;
 static uint8_t batBase;
 static uint32_t batFresh = 0;
@@ -45,12 +46,13 @@ void aqiStorage()
     Blinker.dataStorage("humi", humiGet());
 
     if (WiFi.status() == WL_CONNECTED && checkInit()) {
-        Blinker.dataUpdate();
+        tickerTrigged = true;
 
-        BLINKER_LOG1("Blinker.dataUpdate()");
+        // Blinker.dataUpdate();
+        // BLINKER_LOG1("Blinker.dataUpdate()");
     }
 
-    // pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
+    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
 }
 
 /* 
@@ -319,8 +321,18 @@ void hardwareInit()
 
     batRead = getBAT() * 10;
 
-    // pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
+    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
     // batRead = 40;
+}
+
+void checkUpdate()
+{
+    if (tickerTrigged) {
+        tickerTrigged = false;
+
+        Blinker.dataUpdate();
+        BLINKER_LOG1("Blinker.dataUpdate()");
+    }
 }
 
 void AQI_init()
@@ -357,6 +369,8 @@ void AQI_run()
     batCheck();
 
     aqiFresh();
+
+    checkUpdate();
 }
 
 void changeMain()
@@ -383,16 +397,6 @@ void display()
     }
 }
 
-// void freshPush()
-// {
-//     pushTicker.detach();
-
-//     uint16_t nextSecond = 3600 - (Blinker.minute() * 60 + Blinker.second());
-//     pushTicker.once(nextSecond, aqiStorage);
-
-//     BLINKER_LOG4("fresh push ticker ", nextSecond, ", ", Blinker.minute() * 60 + Blinker.second());
-// }
-
 uint32_t fresh_time = 0;
 
 bool checkInit()
@@ -401,19 +405,8 @@ bool checkInit()
         if (Blinker.init()) {
             setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
             inited = true;
-
-            // freshPush();
-
-            // String get_aqi = Blinker.aqi();
-            // BLINKER_LOG2("AQI: ", get_aqi);
-            fresh_time = millis();
-            aqiStorage();
         }
     }
-    // else if(inited && (millis() - fresh_time) > 30000) {
-    //     fresh_time = millis();
-    //     aqiStorage();
-    // }
     
     return inited;
 }
