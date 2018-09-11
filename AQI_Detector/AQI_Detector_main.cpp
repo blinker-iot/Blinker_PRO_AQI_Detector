@@ -55,6 +55,36 @@ void aqiStorage()
     pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
 }
 
+uint8_t getSignals()
+{
+    
+    if (WiFi.status() == WL_CONNECTED) {
+        int32_t wRSSI = WiFi.RSSI();
+
+        // IOT_DEBUG_PRINT2(F("getSignals: "), wRSSI);
+
+        setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
+
+        if (wRSSI < -90) {
+            return 0;
+        }
+        else if (wRSSI >= -90 && wRSSI < -80) {
+            return 1;
+        }
+        else if (wRSSI >= -80 && wRSSI < -70) {
+            return 2;
+        }
+        else if (wRSSI >= -70) {
+            return 3;
+        }
+    }
+    else {
+        setTimeLimit(BLINKER_PMS_LIMIT_INIT);
+
+        return 0;
+    }
+}
+
 /* 
  * Add your command parse code in this function
  * 
@@ -391,6 +421,8 @@ void display()
             timeDisplay(pm2_5Get(), Blinker.month(), Blinker.mday(), 
                     Blinker.wday(), Blinker.hour(), Blinker.minute());
         }
+
+        setSignals(getSignals());
     }
     else {
         resetDisplay(Blinker.pressedTime());
@@ -429,8 +461,8 @@ void aqiFresh()
         }
     }
     else {
-        pmsFresh();
-        
-        freshDisplay();
+        if (pmsFresh()) {
+            freshDisplay();
+        }
     }
 }

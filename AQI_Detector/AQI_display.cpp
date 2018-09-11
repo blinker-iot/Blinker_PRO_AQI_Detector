@@ -25,6 +25,7 @@ static uint8_t displayLanguage = BLINKER_LANGUAGE_CN;
 static uint8_t initProgressBar = 0;
 static uint8_t targetContrast = 255;
 static uint8_t AQI_BASE = BLINKER_AQI_BASE_CN;
+static uint8_t wlanLevel = 0;
 static callbackFunction _diplayFunc;
 static callbackFunction_arg_u8 _colorFunc;
 
@@ -135,31 +136,36 @@ String display_num_len_2(uint8_t num)
     return reNum;
 }
 
-uint8_t getSignals()
+void setSignals(uint8_t level)
 {
-    
-    if (WiFi.status() == WL_CONNECTED) {
-        int32_t wRSSI = WiFi.RSSI();
-
-        // IOT_DEBUG_PRINT2(F("getSignals: "), wRSSI);
-
-        if (wRSSI < -90) {
-            return 0;
-        }
-        else if (wRSSI >= -90 && wRSSI < -80) {
-            return 1;
-        }
-        else if (wRSSI >= -80 && wRSSI < -70) {
-            return 2;
-        }
-        else if (wRSSI >= -70) {
-            return 3;
-        }
-    }
-    else {
-        return 0;
-    }
+    wlanLevel = level;
 }
+
+// uint8_t getSignals()
+// {
+    
+//     if (WiFi.status() == WL_CONNECTED) {
+//         int32_t wRSSI = WiFi.RSSI();
+
+//         // IOT_DEBUG_PRINT2(F("getSignals: "), wRSSI);
+
+//         if (wRSSI < -90) {
+//             return 0;
+//         }
+//         else if (wRSSI >= -90 && wRSSI < -80) {
+//             return 1;
+//         }
+//         else if (wRSSI >= -80 && wRSSI < -70) {
+//             return 2;
+//         }
+//         else if (wRSSI >= -70) {
+//             return 3;
+//         }
+//     }
+//     else {
+//         return 0;
+//     }
+// }
 
 static String weekDays(uint8_t weekDay)
 {
@@ -327,7 +333,7 @@ void aqiDisplay(uint16_t _pm1_0, uint16_t _pm2_5, uint16_t _pm10_0, double _humi
     // if (getTimerTimingState() == "true")
     //     u8g2.drawXBMP(95, 51, 11, 12, alarmClock);
     // u8g2.drawXBMP(110, 51, 17, 12, signalSymbols[getSignals()]);//signalSymbols[(uint8_t)random(0,4)]
-    u8g2.drawXBMP(88, 51, 17, 12, signalSymbols[getSignals()]);//signalSymbols[(uint8_t)random(0,4)]
+    u8g2.drawXBMP(88, 51, 17, 12, signalSymbols[wlanLevel]);//signalSymbols[(uint8_t)random(0,4)]
     // batDisplay();
     u8g2.sendBuffer();
 }
@@ -404,7 +410,7 @@ void timeDisplay(uint16_t _pm2_5, int8_t _mon, int8_t _mday,
     // if (getTimerTimingState() == "true")
     //     u8g2.drawXBMP(95, 51, 11, 12, alarmClock);
     // u8g2.drawXBMP(110, 51, 17, 12, signalSymbols[getSignals()]);
-    u8g2.drawXBMP(88, 51, 17, 12, signalSymbols[getSignals()]);
+    u8g2.drawXBMP(88, 51, 17, 12, signalSymbols[wlanLevel]);
     // batDisplay();
     u8g2.sendBuffer();
 }

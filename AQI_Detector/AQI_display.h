@@ -32,7 +32,9 @@ String display_num_len_3(uint16_t num);
 
 String display_num_len_2(uint8_t num);
 
-uint8_t getSignals();
+void setSignals(uint8_t level);
+
+// uint8_t getSignals();
 
 static String weekDays(uint8_t weekDay);
 
