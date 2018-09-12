@@ -1,7 +1,7 @@
 #include "AQI_display.h"
 #include "AQI_font.h"
 
-#include <ESP8266WiFi.h>
+// #include <ESP8266WiFi.h>
 
 // U8g2lib, https://github.com/olikraus/U8g2_Arduino
 #include <U8g2lib.h>
