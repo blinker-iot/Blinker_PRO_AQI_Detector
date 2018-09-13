@@ -8,6 +8,14 @@ extern "C" {
     typedef uint8_t (*callbackFunction_arg_u8)(uint8_t arg);
 }
 
+enum LED_TYPE{
+    NORMAL,
+    WLAN_CONNECTING,
+    WLAN_CONNECTED,
+    DEVICE_CONNECTING,
+    DEVICE_CONNECTED
+};
+
 void setContrast(uint8_t _contrast);
 
 uint8_t getContrast();
@@ -40,7 +48,9 @@ static String weekDays(uint8_t weekDay);
 
 static String months(uint8_t mons);
 
-static void colorDisplay();
+void setColorType(uint8_t type);
+
+void colorDisplay();
 
 void batDisplay(double _bat);
 
@@ -51,6 +61,8 @@ void timeDisplay(uint16_t _pm2_5, int8_t _mon, int8_t _mday,
             int8_t _wday, int8_t _hour, int8_t _min);
 
 void initPage();
+
+void clearPage();
 
 void resetDisplay(uint16_t _time);
 

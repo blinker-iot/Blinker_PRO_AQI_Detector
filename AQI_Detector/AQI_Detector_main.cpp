@@ -32,6 +32,7 @@ static bool tickerTrigged = false;
 static uint8_t batRead;
 static uint8_t batBase;
 static uint32_t batFresh = 0;
+static bool isRegisterBlink = false;
 Ticker pushTicker;
 
 void aqiStorage()
@@ -262,7 +263,8 @@ void attachLongPressStop()
  */
 void longPressPowerdown()
 {
-    freshDisplay();
+    // freshDisplay();
+    clearPage();
 
     BLINKER_LOG1("Button long press powerdown!");
 
@@ -276,7 +278,8 @@ void longPressPowerdown()
  */
 void longPressReset()
 {
-    freshDisplay();
+    // freshDisplay();
+    clearPage();
 
     BLINKER_LOG1("Button long press reset!");
 }
@@ -433,6 +436,27 @@ uint32_t fresh_time = 0;
 
 bool checkInit()
 {
+    uint8_t deviceStatus = Blinker.status();
+    if (deviceStatus == PRO_WLAN_SMARTCONFIG_DONE) {
+        setColorType(WLAN_CONNECTING);
+        isRegisterBlink = true;
+    }
+    else if (deviceStatus >= PRO_DEV_AUTHCHECK_FAIL
+        && deviceStatus <= PRO_DEV_REGISTER_FAIL
+        && isRegisterBlink) {
+        setColorType(WLAN_CONNECTED);
+    }
+    else if (deviceStatus >= PRO_DEV_REGISTER_FAIL
+        && deviceStatus < PRO_DEV_CONNECTED
+        && isRegisterBlink) {
+        setColorType(DEVICE_CONNECTING);
+    }
+    else if (deviceStatus == PRO_DEV_CONNECTED
+        && isRegisterBlink) {
+        setColorType(DEVICE_CONNECTED);
+        isRegisterBlink = false;
+    }
+
     if (!inited) {
         if (Blinker.init()) {
             setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
@@ -459,10 +483,18 @@ void aqiFresh()
                 freshDisplay();
             }
         }
+        colorDisplay();
     }
     else {
-        if (pmsFresh()) {
+        if (getSignals()) {
+            pmsFresh();
             freshDisplay();
         }
+        else {
+            if (pmsFresh()) {
+                freshDisplay();
+            }
+        }
+        colorDisplay();
     }
 }

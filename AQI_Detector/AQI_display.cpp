@@ -2,6 +2,7 @@
 #include "AQI_font.h"
 
 // #include <ESP8266WiFi.h>
+#include <Ticker.h>
 
 // U8g2lib, https://github.com/olikraus/U8g2_Arduino
 #include <U8g2lib.h>
@@ -12,7 +13,7 @@
 
 // U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /*reset Pin*/ D0);
 // U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /*reset Pin*/ BLINKER_OLED_RESET_PIN);
-U8G2_SH1106_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, BLINKER_IIC_SCK_PIN, BLINKER_IIC_SDA_PIN,/* reset=*/ BLINKER_OLED_RESET_PIN);
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0,/* reset=*/ BLINKER_OLED_RESET_PIN, BLINKER_IIC_SCK_PIN, BLINKER_IIC_SDA_PIN);
 
 #include <Adafruit_NeoPixel.h>
 
@@ -21,6 +22,7 @@ U8G2_SH1106_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, BLINKER_IIC_SCK_PIN, BLINKER_II
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
 static bool isDisplayDetail = false;
+static bool isNormalDisplay = true;
 static uint8_t displayLanguage = BLINKER_LANGUAGE_CN;
 static uint8_t initProgressBar = 0;
 static uint8_t targetContrast = 255;
@@ -28,6 +30,12 @@ static uint8_t AQI_BASE = BLINKER_AQI_BASE_CN;
 static uint8_t wlanLevel = 0;
 static callbackFunction _diplayFunc;
 static callbackFunction_arg_u8 _colorFunc;
+
+Ticker ledTicker;
+
+static bool isAuth = false;
+static bool isBlink = false;
+static bool isConnected = false;
 
 void setContrast(uint8_t _contrast)
 {
@@ -104,7 +112,7 @@ void freshDisplay()
         }
     } while ( u8g2.nextPage() );
 
-    colorDisplay();
+    // colorDisplay();
 }
 
 void changeDetail()
@@ -197,56 +205,180 @@ static String months(uint8_t mons) {
     }
 }
 
-static void colorDisplay()
+void disconnectBlink()
+{
+    if (isAuth) {
+        // digitalWrite(PLUGIN_GREEN_LED_PIN, !digitalRead(PLUGIN_GREEN_LED_PIN));
+        // digitalWrite(PLUGIN_RED_LED_PIN, HIGH);
+        // uint8_t R = 0, G = 0, B = 0;
+        uint32_t color = pixels.getPixelColor(0);
+        if (color >> 8 & 0xFF) {
+            pixels.setPixelColor(0, pixels.Color(0, 0, 0)); 
+            pixels.show();
+        }
+        else {
+        // R = color >> 16 & 0xFF;
+        // G = color >> 8  & 0xFF;
+        // B = color       & 0xFF;
+            pixels.setPixelColor(0, pixels.Color(0, 255, 0)); 
+            pixels.show();
+        }        
+    }
+    else {
+        if (isConnected) {
+            uint32_t color = pixels.getPixelColor(0);
+            if (color >> 16 & 0xFF) {
+                pixels.setPixelColor(0, pixels.Color(0, 0, 0)); 
+                pixels.show();
+            }
+            else {
+                pixels.setPixelColor(0, pixels.Color(255, 255, 0)); 
+                pixels.show();
+            }
+        }
+        else {
+            uint32_t color = pixels.getPixelColor(0);
+            if (color >> 16 & 0xFF) {
+                pixels.setPixelColor(0, pixels.Color(0, 0, 0)); 
+                pixels.show();
+            }
+            else {
+                pixels.setPixelColor(0, pixels.Color(255, 0, 0)); 
+                pixels.show();
+            }
+        }
+    }
+
+    ledTicker.once(0.5, disconnectBlink);
+}
+
+// void connectBright(bool state)
+// {
+//     detachBlink();
+//     // if (state && digitalRead(PLUGIN_GREEN_LED_PIN)) {
+//     if (state) {
+//         // digitalWrite(PLUGIN_GREEN_LED_PIN, LOW);
+//         // digitalWrite(PLUGIN_RED_LED_PIN, HIGH);
+
+//         pixels.setPixelColor(0, pixels.Color(0, 255, 0)); 
+//         pixels.show();
+//     }
+//     else if (!state && digitalRead(PLUGIN_RED_LED_PIN)) {
+//         // digitalWrite(PLUGIN_GREEN_LED_PIN, HIGH);
+//         // digitalWrite(PLUGIN_RED_LED_PIN, LOW);
+//         pixels.setPixelColor(0, pixels.Color(255, 0, 0)); 
+//         pixels.show();
+//     }
+// }
+
+void attachBlink()
+{
+    if (!isBlink) {
+        ledTicker.once(0.5, disconnectBlink);
+        isBlink = true;
+    }
+}
+
+void detachBlink()
+{
+    if (isBlink) {
+        ledTicker.detach();
+        isBlink = false;
+    }
+}
+
+void setColorType(uint8_t type)
+{
+    switch (type) {
+        case NORMAL :
+            isNormalDisplay = true;
+            detachBlink();
+            break;
+        case WLAN_CONNECTING :
+            isNormalDisplay = false;
+            // detachBlink();
+            isAuth = false;
+            isConnected = false;
+            attachBlink();
+            break;
+        case WLAN_CONNECTED :
+            isNormalDisplay = false;
+            // detachBlink();
+            isAuth = false;
+            isConnected = true;
+            attachBlink();
+            break;
+        case DEVICE_CONNECTING :
+            isNormalDisplay = false;
+            // detachBlink();
+            isAuth = true;
+            isConnected = false;
+            attachBlink();
+            break;
+        case DEVICE_CONNECTED :
+            isNormalDisplay = true;
+            detachBlink();
+            break;
+        default :
+            isNormalDisplay = true;
+            detachBlink();
+            break;
+    }
+}
+
+void colorDisplay()
 {
     uint8_t R = 0, G = 0, B = 0;
     // switch (AQIBUFFER[AQI_BASE][1]) {
-    if (!_colorFunc) {
-        return;
-    }
-    switch(_colorFunc(AQI_BASE)) {
-        case 0: /*IOT_DEBUG_PRINT1("color Green");*/    
-            R = 0;                              
-            G = map(targetContrast, 0, 255, 0, 64);  
-            B = 0;                              
-            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
-            pixels.show(); 
-            break;
-        case 1: /*IOT_DEBUG_PRINT1("color Yellow");*/   
-            R = map(targetContrast, 0, 255, 0, 64);  
-            G = map(targetContrast, 0, 255, 0, 64);  
-            B = 0;                              
-            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
-            pixels.show(); 
-            break;
-        case 2: /*IOT_DEBUG_PRINT1("color Orange");*/   
-            R = map(targetContrast, 0, 255, 0, 64);  
-            G = map(targetContrast, 0, 255, 0, 32);  
-            B = 0;                              
-            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
-            pixels.show(); 
-            break;
-        case 3: /*IOT_DEBUG_PRINT1("color Red");*/      
-            R = map(targetContrast, 0, 255, 0, 64);  
-            G = 0;                              
-            B = 0;                              
-            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
-            pixels.show(); 
-            break;
-        case 4: /*IOT_DEBUG_PRINT1("color Purple");*/   
-            R = map(targetContrast, 0, 255, 0, 32);  
-            G = 0;                              
-            B = map(targetContrast, 0, 255, 0, 32);  
-            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
-            pixels.show(); 
-            break;
-        case 5: /*IOT_DEBUG_PRINT1("color Maroon");*/   
-            R = map(targetContrast, 0, 255, 0, 32);  
-            G = map(targetContrast, 0, 255, 0, 4);   
-            B = map(targetContrast, 0, 255, 0, 6);   
-            pixels.setPixelColor(0, pixels.Color(R, G, B)); 
-            pixels.show(); 
-            break;
+    
+    if (isNormalDisplay) {
+        if (!_colorFunc) {
+            return;
+        }
+        switch(_colorFunc(AQI_BASE)) {
+            case 0: /*IOT_DEBUG_PRINT1("color Green");*/    
+                R = 0;                              
+                G = map(targetContrast, 0, 255, 0, 64);  
+                B = 0;                              
+                pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+                pixels.show(); 
+                break;
+            case 1: /*IOT_DEBUG_PRINT1("color Yellow");*/   
+                R = map(targetContrast, 0, 255, 0, 64);  
+                G = map(targetContrast, 0, 255, 0, 64);  
+                B = 0;                              
+                pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+                pixels.show(); 
+                break;
+            case 2: /*IOT_DEBUG_PRINT1("color Orange");*/   
+                R = map(targetContrast, 0, 255, 0, 64);  
+                G = map(targetContrast, 0, 255, 0, 32);  
+                B = 0;                              
+                pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+                pixels.show(); 
+                break;
+            case 3: /*IOT_DEBUG_PRINT1("color Red");*/      
+                R = map(targetContrast, 0, 255, 0, 64);  
+                G = 0;                              
+                B = 0;                              
+                pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+                pixels.show(); 
+                break;
+            case 4: /*IOT_DEBUG_PRINT1("color Purple");*/   
+                R = map(targetContrast, 0, 255, 0, 32);  
+                G = 0;                              
+                B = map(targetContrast, 0, 255, 0, 32);  
+                pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+                pixels.show(); 
+                break;
+            case 5: /*IOT_DEBUG_PRINT1("color Maroon");*/   
+                R = map(targetContrast, 0, 255, 0, 32);  
+                G = map(targetContrast, 0, 255, 0, 4);   
+                B = map(targetContrast, 0, 255, 0, 6);   
+                pixels.setPixelColor(0, pixels.Color(R, G, B)); 
+                pixels.show(); 
+                break;
+        }
     }
 }
 
@@ -425,6 +557,12 @@ void initPage()
     u8g2.setFont(u8g2_font_helvR10_te);
     u8g2.setCursor(1, 63);
     u8g2.print("blinker AQI detector");
+    u8g2.sendBuffer();
+}
+
+void clearPage()
+{
+    u8g2.clearBuffer();
     u8g2.sendBuffer();
 }
 

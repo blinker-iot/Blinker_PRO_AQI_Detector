@@ -20,9 +20,9 @@
 
 #include <Blinker.h>
 
-char auth[] = "Your MQTT Secret Key";
-char ssid[] = "Your WiFi network SSID or name";
-char pswd[] = "Your WiFi network WPA password or WEP key";
+char auth[] = "2f9a2bad";//
+char ssid[] = "mostfun";//"Your WiFi network SSID or name";
+char pswd[] = "18038083873";//"Your WiFi network WPA password or WEP key";
 
 #include <modules/OneButton/OneButton.h>
 
