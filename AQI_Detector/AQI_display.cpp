@@ -568,6 +568,8 @@ void clearPage()
 
 void resetDisplay(uint16_t _time)
 {
+    detachBlink();
+    
     if (displayLanguage) {
         pixels.setPixelColor(0, pixels.Color(0, 64, 0)); 
         pixels.show();

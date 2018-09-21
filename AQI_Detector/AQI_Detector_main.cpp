@@ -27,7 +27,7 @@
 static bool inited = false;
 static bool initDisplayed = false;
 static bool isAQI = true;
-static bool isLongPress = false;
+static uint8_t isLongPress = BLINKER_NONE_LONG_PRESS;
 static bool tickerTrigged = false;
 static uint8_t batRead;
 static uint8_t batBase;
@@ -238,7 +238,7 @@ void doubleClick()
  */
 void longPressStart()
 {
-    isLongPress = true;
+    isLongPress = BLINKER_LONG_PRESS_START;
     freshDisplay();
 
     BLINKER_LOG1("Button long press start!");
@@ -251,7 +251,7 @@ void longPressStart()
  */
 void attachLongPressStop()
 {
-    isLongPress = false;
+    // isLongPress = false;
     freshDisplay();
 
     BLINKER_LOG1("Button long press start!");
@@ -264,6 +264,7 @@ void attachLongPressStop()
 void longPressPowerdown()
 {
     // freshDisplay();
+    isLongPress = BLINKER_LONG_PRESS_POWER_DOWN;
     clearPage();
 
     BLINKER_LOG1("Button long press powerdown!");
@@ -279,6 +280,7 @@ void longPressPowerdown()
 void longPressReset()
 {
     // freshDisplay();
+    isLongPress = BLINKER_LONG_PRESS_RESET;
     clearPage();
 
     BLINKER_LOG1("Button long press reset!");
@@ -378,6 +380,8 @@ void AQI_init()
     
     Blinker.begin(BLINKER_AIR_DETECTOR);
 
+    // Blinker.deleteTimer();
+
     Blinker.attachParse(dataParse);
     Blinker.attachHeartbeat(heartbeat);
 
@@ -413,7 +417,7 @@ void changeMain()
 
 void display()
 {
-    if (!isLongPress) {
+    if (isLongPress == BLINKER_NONE_LONG_PRESS) {
         batDisplay(batRead / 10.0);
 
         if (isAQI) {
@@ -427,8 +431,11 @@ void display()
 
         setSignals(getSignals());
     }
-    else {
+    else if (isLongPress == BLINKER_LONG_PRESS_START) {
         resetDisplay(Blinker.pressedTime());
+    }
+    else {
+        clearPage();
     }
 }
 
