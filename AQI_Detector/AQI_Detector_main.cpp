@@ -486,9 +486,11 @@ void aqiFresh()
         else {
             initDisplayed = true;
 
-            if (pmsFresh()) {
-                freshDisplay();
-            }
+            // if (pmsFresh()) {
+            //     freshDisplay();
+            // }
+            pmsFresh();
+            freshDisplay();
         }
         colorDisplay();
     }
@@ -498,9 +500,11 @@ void aqiFresh()
             freshDisplay();
         }
         else {
-            if (pmsFresh()) {
-                freshDisplay();
-            }
+            // if (pmsFresh()) {
+            //     freshDisplay();
+            // }
+            pmsFresh();
+            freshDisplay();
         }
         colorDisplay();
     }
