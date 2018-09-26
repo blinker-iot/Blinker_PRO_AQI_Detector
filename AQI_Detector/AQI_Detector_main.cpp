@@ -23,6 +23,7 @@
 #include "AQI_Detector_main.h"
 #include "AQI_display.h"
 #include "AQI_sensor.h"
+#include "Ticker.h"
 
 static bool inited = false;
 static bool initDisplayed = false;
@@ -34,6 +35,7 @@ static uint8_t batBase;
 static uint32_t batFresh = 0;
 static bool isRegisterBlink = false;
 Ticker pushTicker;
+Ticker wdtTicker;
 
 void aqiStorage()
 {
@@ -370,6 +372,13 @@ void checkUpdate()
     }
 }
 
+void fresh() {
+	wdtTicker.once(3, fresh);
+	BLINKER_LOG1("Fresh & Feed wdt");
+
+	ESP.wdtFeed();
+}
+
 void AQI_init()
 {
     Serial.begin(115200);
@@ -397,6 +406,8 @@ void AQI_init()
 
     attachDisplay(display);
     attachColor(aqiLevelGet);
+
+    wdtTicker.once(3, fresh);
 }
 
 void AQI_run()
