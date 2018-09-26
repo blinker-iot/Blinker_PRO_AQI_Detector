@@ -323,10 +323,10 @@ void batCheck()
         }
         
         BLINKER_LOG3("bat: ", batRead / 10.0, " v");
-        int32_t wRSSI = WiFi.RSSI();
+        // int32_t wRSSI = WiFi.RSSI();
 
-        BLINKER_LOG4("getSignals: ", wRSSI, " , WiFi.status: ", WiFi.status() == WL_CONNECTED);
-        BLINKER_LOG_FreeHeap();
+        // BLINKER_LOG4("getSignals: ", wRSSI, " , WiFi.status: ", WiFi.status() == WL_CONNECTED);
+        // BLINKER_LOG_FreeHeap();
 
         // // BLINKER_LOG2("aqibase", getAQIbase());
         // // BLINKER_LOG2("langauage", getLanguage());
@@ -407,7 +407,7 @@ void AQI_init()
     attachDisplay(display);
     attachColor(aqiLevelGet);
 
-    wdtTicker.once(3, fresh);
+    // wdtTicker.once(3, fresh);
 }
 
 void AQI_run()
@@ -479,6 +479,7 @@ bool checkInit()
         if (Blinker.init()) {
             setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
             inited = true;
+            wdtTicker.once(3, fresh);
         }
     }
     
