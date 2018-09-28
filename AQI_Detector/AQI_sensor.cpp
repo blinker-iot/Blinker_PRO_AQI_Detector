@@ -75,11 +75,17 @@ bool pmsFresh()
         //     // return false;
         //     PMS_TIME_FRESH = millis();
         // }
+
+        // PMS_TIME_FRESH += PMS_TIME_LIMIT;
+
         if (!pms.read()){
+            PMS_TIME_FRESH += 1000;
             return false;
         }
-        PMS_TIME_FRESH = millis();
+        PMS_TIME_FRESH += PMS_TIME_LIMIT;
         return true;
+
+        return pms.read();
     }
     else {
         return false;
