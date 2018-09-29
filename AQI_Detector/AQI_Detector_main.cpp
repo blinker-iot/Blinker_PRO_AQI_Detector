@@ -30,8 +30,8 @@ static bool initDisplayed = false;
 static bool isAQI = true;
 static uint8_t isLongPress = BLINKER_NONE_LONG_PRESS;
 static bool tickerTrigged = false;
-static uint8_t batRead;
-static uint8_t batBase;
+static uint32_t batRead;
+static uint32_t batBase;
 static uint32_t batFresh = 0;
 static bool isRegisterBlink = false;
 Ticker pushTicker;
@@ -311,18 +311,18 @@ void batCheck()
 {
     if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME || BLINKER_BAT_CHECK_TIME == 0)
     {
-        batRead = getBAT() * 10;
+        batRead = getBAT() * 100;
 
-        if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 10) {
+        if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 100) {
             batBase = batRead;
             BLINKER_ERR_LOG1("BLINKER_BAT_POWER_USEUP");
-            BLINKER_LOG6("batBase: ", batBase / 10.0, " v", ", batRead: ", batRead / 10.0, " v");
+            BLINKER_LOG6("batBase: ", batBase / 100.0, " v", ", batRead: ", batRead / 100.0, " v");
         }
         else {
             if (batRead > batBase) batBase = batRead;
         }
         
-        BLINKER_LOG3("bat: ", batRead / 10.0, " v");
+        BLINKER_LOG3("bat: ", batRead / 100.0, " v");
         // int32_t wRSSI = WiFi.RSSI();
 
         // BLINKER_LOG4("getSignals: ", wRSSI, " , WiFi.status: ", WiFi.status() == WL_CONNECTED);
@@ -343,7 +343,7 @@ void batCheck()
 
         batFresh = millis();
 
-        if (batRead < BLINKER_BAT_POWER_LOW * 10) {
+        if (batRead < BLINKER_BAT_POWER_LOW * 100) {
             // digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
         }
     }
@@ -433,7 +433,7 @@ void changeMain()
 void display()
 {
     if (isLongPress == BLINKER_NONE_LONG_PRESS) {
-        batDisplay(batRead / 10.0);
+        batDisplay(batRead / 100.0);
 
         if (isAQI) {
             aqiDisplay(pm1_0Get(), pm2_5Get(), pm10_0Get(), humiGet(),
