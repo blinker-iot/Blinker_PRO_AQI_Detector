@@ -77,8 +77,8 @@ bool pmsFresh()
         Serial.print(", PMS_TIME_LIMIT: ");
         Serial.print(PMS_TIME_LIMIT);
 
-        pms.wakeUp();
-        delay(10);
+        // pms.wakeUp();
+        // delay(10);
         pms.request();
         // while (!pms.read()){
         //     // return false;
@@ -89,13 +89,13 @@ bool pmsFresh()
 
         if (!pms.read()){
             if (PMS_TIME_FRESH != 0) PMS_TIME_FRESH += 1000;
-            pms.sleep();
+            // pms.sleep();
 
             Serial.println(", not get PMS data");
             return false;
         }
         PMS_TIME_FRESH += PMS_TIME_LIMIT;
-        pms.sleep();
+        // pms.sleep();
 
         Serial.println(", get PMS data");
         return true;
