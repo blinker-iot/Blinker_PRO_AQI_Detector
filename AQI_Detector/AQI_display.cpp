@@ -23,6 +23,7 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, BLINKER_WS2812_PIN, NEO_
 
 static bool isDisplayDetail = false;
 static bool isNormalDisplay = true;
+static double batGet;
 static uint8_t displayLanguage = BLINKER_LANGUAGE_CN;
 static uint8_t initProgressBar = 0;
 static uint8_t targetContrast = 255;
@@ -388,6 +389,8 @@ void batDisplay(double _bat)
         _bat = BLINKER_BAT_POWER_HIGH;
     }
 
+    batGet = _bat;
+
     uint8_t drawBat = (_bat - BLINKER_BAT_POWER_LOW) / (BLINKER_BAT_POWER_HIGH - BLINKER_BAT_POWER_LOW) * 14;
 
     if (drawBat > 14) drawBat = 14;
@@ -460,7 +463,7 @@ void aqiDisplay(uint16_t _pm1_0, uint16_t _pm2_5, uint16_t _pm10_0, double _humi
 
     u8g2.setFont(u8g2_font_helvR10_tf);//14x15 u8g2_font_helvR10_tf
     u8g2.setCursor(0, 63);
-    u8g2.print(hour + ":" + mins + " " + millis()/1000/60 + ":" + millis()/1000%60);
+    u8g2.print(hour + ":" + mins + " " + millis()/1000/60 + ":" + millis()/1000%60 + " " + batGet);
     
     // if (getTimerTimingState() == "true")
     //     u8g2.drawXBMP(95, 51, 11, 12, alarmClock);
@@ -537,7 +540,7 @@ void timeDisplay(uint16_t _pm2_5, int8_t _mon, int8_t _mday,
 
     u8g2.setFont(u8g2_font_helvR10_tf);//14x15 u8g2_font_helvR10_tf
     u8g2.setCursor(0, 63);
-    u8g2.print("PM2.5 " + pm25data + " " + millis()/1000/60 + ":" + millis()/1000%60);
+    u8g2.print("PM2.5 " + pm25data + " " + millis()/1000/60 + ":" + millis()/1000%60 + " " + batGet);
 
     // if (getTimerTimingState() == "true")
     //     u8g2.drawXBMP(95, 51, 11, 12, alarmClock);

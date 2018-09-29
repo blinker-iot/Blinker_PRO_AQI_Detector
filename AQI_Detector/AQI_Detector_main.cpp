@@ -309,7 +309,7 @@ double getBAT()
 
 void batCheck()
 {
-    if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME)
+    if ((millis() - batFresh) > BLINKER_BAT_CHECK_TIME || BLINKER_BAT_CHECK_TIME == 0)
     {
         batRead = getBAT() * 10;
 
