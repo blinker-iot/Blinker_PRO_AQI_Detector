@@ -71,7 +71,7 @@ bool pmsFresh()
 #endif
         Serial.print("[");
         Serial.print(millis());
-        Serial.print("]: ");
+        Serial.print("] ");
         Serial.print("Read PMS , PMS_TIME_FRESH: ");
         Serial.print(PMS_TIME_FRESH);
         Serial.print(", PMS_TIME_LIMIT: ");

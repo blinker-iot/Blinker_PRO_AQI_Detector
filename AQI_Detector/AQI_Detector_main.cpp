@@ -411,7 +411,7 @@ void AQI_init()
     attachDisplay(display);
     attachColor(aqiLevelGet);
 
-    // wdtTicker.once(3, fresh);
+    wdtTicker.once(3, fresh);
 }
 
 void AQI_run()
