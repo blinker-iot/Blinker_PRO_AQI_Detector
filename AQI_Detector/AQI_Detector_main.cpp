@@ -365,10 +365,14 @@ void hardwareInit()
 void checkUpdate()
 {
     if (tickerTrigged) {
+        digitalWrite(BLINKER_POWER_5V_PIN, LOW);
+
         tickerTrigged = false;
 
         Blinker.dataUpdate();
         BLINKER_LOG1("Blinker.dataUpdate()");
+
+        digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
     }
 }
 
