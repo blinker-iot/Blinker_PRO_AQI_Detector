@@ -525,7 +525,7 @@ void aqiFresh()
             pmsFresh();
             freshDisplay();
         }
-        // colorDisplay();
+        colorDisplay();
     }
     else {
         if (getSignals()) {
@@ -542,6 +542,6 @@ void aqiFresh()
             pmsFresh();
             freshDisplay();
         }
-        // colorDisplay();
+        colorDisplay();
     }
 }
