@@ -31,6 +31,7 @@ static uint8_t AQI_BASE = BLINKER_AQI_BASE_CN;
 static uint8_t wlanLevel = 0;
 static callbackFunction _diplayFunc;
 static callbackFunction_arg_u8 _colorFunc;
+static uint32_t freshTime = 0;
 
 Ticker ledTicker;
 
@@ -104,14 +105,18 @@ void attachColor(callbackFunction_arg_u8 _func)
 
 void freshDisplay()
 {
-    u8g2.setContrast(targetContrast);
+    if ((millis() - freshTime) >= 1000 || freshTime == 0) {
+        u8g2.setContrast(targetContrast);
 
-    u8g2.firstPage();
-    do {
-        if (_diplayFunc) {
-            _diplayFunc();
-        }
-    } while ( u8g2.nextPage() );
+        u8g2.firstPage();
+        do {
+            if (_diplayFunc) {
+                _diplayFunc();
+            }
+        } while ( u8g2.nextPage() );
+
+        freshTime += 1000;
+    }
 
     // colorDisplay();
 }

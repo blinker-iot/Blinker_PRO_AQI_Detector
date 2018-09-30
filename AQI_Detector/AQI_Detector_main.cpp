@@ -414,9 +414,26 @@ void AQI_init()
     wdtTicker.once(3, fresh);
 }
 
+void cmd()
+{
+    if (Serial.available()) {
+        String getcmd = Serial.readStringUntil('\n');
+
+        Serial.print("getcmd: ");
+        Serial.println(getcmd);
+        
+        if (STRING_contains_string(getcmd, "auto")) {
+            pinMode(BUILTIN_LED, OUTPUT);
+            digitalWrite(BUILTIN_LED, LOW);
+        }
+    }
+}
+
 void AQI_run()
 {
     Blinker.run();
+
+    // cmd();
 
     batCheck();
 
@@ -508,10 +525,13 @@ void aqiFresh()
             pmsFresh();
             freshDisplay();
         }
-        colorDisplay();
+        // colorDisplay();
     }
     else {
         if (getSignals()) {
+            // if (pmsFresh()) {
+            //     freshDisplay();
+            // }
             pmsFresh();
             freshDisplay();
         }
@@ -522,6 +542,6 @@ void aqiFresh()
             pmsFresh();
             freshDisplay();
         }
-        colorDisplay();
+        // colorDisplay();
     }
 }
