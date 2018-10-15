@@ -14,6 +14,7 @@ BLINKER_PMSX003ST pms;
 
 uint32_t PMS_TIME_FRESH = 0;
 uint32_t PMS_TIME_LIMIT = BLINKER_PMS_LIMIT_INIT;
+bool isSleep = false;
 
 uint16_t pm1_0Get()
 {
@@ -60,9 +61,26 @@ void setTimeLimit(uint16_t _time)
     PMS_TIME_LIMIT = _time;
 }
 
+void sleep()
+{
+    pms.sleep();
+
+    isSleep = true;
+}
+
+void wakeUp()
+{
+    pms.wakeUp();
+
+    PMS_TIME_FRESH += BLINKER_PMS_SLEEP_TIME * 1000;
+
+    isSleep = false;
+}
+
 bool pmsFresh()
 {
-    if ((millis() > PMS_TIME_FRESH && (millis() - PMS_TIME_FRESH) >= PMS_TIME_LIMIT) || PMS_TIME_FRESH == 0) {
+    if (((millis() > PMS_TIME_FRESH && (millis() - PMS_TIME_FRESH) >= PMS_TIME_LIMIT) 
+        || PMS_TIME_FRESH == 0) && !isSleep) {
 #ifndef ESP32
         if (!pmsSerial.isListening()) {
             pmsSerial.listen();
@@ -88,7 +106,12 @@ bool pmsFresh()
         // PMS_TIME_FRESH += PMS_TIME_LIMIT;
 
         if (!pms.read()){
-            if (PMS_TIME_FRESH != 0) PMS_TIME_FRESH += 1000;
+            if (PMS_TIME_FRESH != 0) {
+                PMS_TIME_FRESH += 1000;
+            }
+            // else {
+            //     PMS_TIME_FRESH = millis();
+            // }
             // pms.sleep();
 
             Serial.println(", not get PMS data");
@@ -112,6 +135,7 @@ void pmsInit()
     pmsSerial.begin(9600);
     pms.begin(pmsSerial);
     pms.setMode(PASSIVE);
+    pms.wakeUp();
 
     setTimeLimit(BLINKER_PMS_LIMIT_INIT);
 }

@@ -36,6 +36,7 @@ static uint32_t batFresh = 0;
 static bool isRegisterBlink = false;
 Ticker pushTicker;
 Ticker wdtTicker;
+Ticker pmsTicker;
 
 void aqiStorage()
 {
@@ -383,6 +384,18 @@ void fresh() {
 	ESP.wdtFeed();
 }
 
+void pmsWakeUp() {
+    wakeUp();
+    BLINKER_LOG1("PMS WAKEUP");
+    pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
+}
+
+void pmsSleep() {
+    sleep();
+    BLINKER_LOG1("PMS SLEEP");
+    pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
+}
+
 void AQI_init()
 {
     Serial.begin(115200);
@@ -390,6 +403,7 @@ void AQI_init()
     hardwareInit();
     u8g2Init();
     pmsInit();
+    pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
     
     Blinker.begin(BLINKER_AIR_DETECTOR);
 

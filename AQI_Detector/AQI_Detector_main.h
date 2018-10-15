@@ -5,6 +5,10 @@
 
 double getBAT();
 
+void pmsWakeUp();
+
+void pmsSleep();
+
 void AQI_init();
 
 void AQI_run();
