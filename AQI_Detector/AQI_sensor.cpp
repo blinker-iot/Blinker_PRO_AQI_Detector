@@ -72,7 +72,7 @@ void wakeUp()
 {
     pms.wakeUp();
 
-    PMS_TIME_FRESH += BLINKER_PMS_SLEEP_TIME * 1000;
+    PMS_TIME_FRESH += BLINKER_PMS_SLEEP_TIME * 1000 + 30000;
 
     isSleep = false;
 }
@@ -107,7 +107,7 @@ bool pmsFresh()
 
         if (!pms.read()){
             if (PMS_TIME_FRESH != 0) {
-                PMS_TIME_FRESH += 1000;
+                PMS_TIME_FRESH += 5000;
             }
             // else {
             //     PMS_TIME_FRESH = millis();
