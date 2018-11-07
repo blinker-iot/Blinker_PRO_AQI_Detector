@@ -396,6 +396,24 @@ void pmsSleep() {
     pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
 }
 
+void aligenieQuery(int32_t queryCode)
+{
+    BLINKER_LOG2("AliGenie Query codes: ", queryCode);
+
+    switch (queryCode)
+    {
+        case BLINKER_CMD_QUERY_ALL_NUMBER :
+            BLINKER_LOG1("AliGenie Query All");
+            BlinkerAliGenie.temp(tempGet());
+            BlinkerAliGenie.humi(humiGet());
+            BlinkerAliGenie.pm25(pm2_5Get());
+            BlinkerAliGenie.print();
+            break;
+        default :
+            break;
+    }
+}
+
 void AQI_init()
 {
     Serial.begin(115200);
@@ -421,6 +439,8 @@ void AQI_init()
 
     attachInterrupt(BLINKER_BUTTON_PIN, buttonTick, CHANGE);
 #endif
+
+    BlinkerAliGenie.attachQuery(aligenieQuery);
 
     attachDisplay(display);
     attachColor(aqiLevelGet);
