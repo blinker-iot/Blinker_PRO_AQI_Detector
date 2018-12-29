@@ -40,7 +40,7 @@ Ticker pmsTicker;
 
 void aqiStorage()
 {
-    BLINKER_LOG1("push ticker trigged");
+    BLINKER_LOG("push ticker trigged");
 
     Blinker.dataStorage("pm1.0", pm1_0Get());
     Blinker.dataStorage("pm2.5", pm2_5Get());
@@ -53,7 +53,7 @@ void aqiStorage()
         tickerTrigged = true;
 
         // Blinker.dataUpdate();
-        // BLINKER_LOG1("Blinker.dataUpdate()");
+        // BLINKER_LOG("Blinker.dataUpdate()");
     }
 
     pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
@@ -99,7 +99,7 @@ bool dataParse(const JsonObject & data)
 {
     String getData;
     data.printTo(getData);
-    BLINKER_LOG2("Get user command: ", getData);
+    BLINKER_LOG("Get user command: ", getData);
 
     bool isParsed = false;
 
@@ -186,7 +186,7 @@ void heartbeat()
 
     // Blinker.printObject("detector", values);
 
-    BLINKER_LOG1("heartbeat!");
+    BLINKER_LOG("heartbeat!");
 }
 
 #if defined(BLINKER_BUTTON)
@@ -215,7 +215,7 @@ void singalClick()
         freshDisplay();
     }
 
-    BLINKER_LOG1("Button clicked!");
+    BLINKER_LOG("Button clicked!");
 }
 
 /* 
@@ -231,7 +231,7 @@ void doubleClick()
         freshDisplay();
     }
 
-    BLINKER_LOG1("Button double clicked!");
+    BLINKER_LOG("Button double clicked!");
 }
 
 /* 
@@ -244,7 +244,7 @@ void longPressStart()
     isLongPress = BLINKER_LONG_PRESS_START;
     freshDisplay();
 
-    BLINKER_LOG1("Button long press start!");
+    BLINKER_LOG("Button long press start!");
 }
 
 /* 
@@ -257,7 +257,7 @@ void attachLongPressStop()
     // isLongPress = false;
     freshDisplay();
 
-    BLINKER_LOG1("Button long press start!");
+    BLINKER_LOG("Button long press start!");
 }
 /* 
  * Add your code in this function
@@ -270,7 +270,7 @@ void longPressPowerdown()
     isLongPress = BLINKER_LONG_PRESS_POWER_DOWN;
     clearPage();
 
-    BLINKER_LOG1("Button long press powerdown!");
+    BLINKER_LOG("Button long press powerdown!");
 
     digitalWrite(BLINKER_POWER_3V3_PIN, LOW);
 }
@@ -286,7 +286,7 @@ void longPressReset()
     isLongPress = BLINKER_LONG_PRESS_RESET;
     clearPage();
 
-    BLINKER_LOG1("Button long press reset!");
+    BLINKER_LOG("Button long press reset!");
 }
 #endif
 
@@ -303,7 +303,7 @@ double getBAT()
 
     double voltage = sensorValue * (5.926 / 1023.0 / 8.0);
 
-    // BLINKER_LOG2("bat: ", voltage);
+    // BLINKER_LOG("bat: ", voltage);
 
     return voltage;
 }
@@ -316,31 +316,31 @@ void batCheck()
 
         if (batBase - batRead > BLINKER_BAT_POWER_USEUP * 100) {
             batBase = batRead;
-            BLINKER_ERR_LOG1("BLINKER_BAT_POWER_USEUP");
-            BLINKER_LOG6("batBase: ", batBase / 100.0, " v", ", batRead: ", batRead / 100.0, " v");
+            BLINKER_ERR_LOG("BLINKER_BAT_POWER_USEUP");
+            BLINKER_LOG("batBase: ", batBase / 100.0, " v", ", batRead: ", batRead / 100.0, " v");
         }
         else {
             if (batRead > batBase) batBase = batRead;
         }
         
-        BLINKER_LOG3("bat: ", batRead / 100.0, " v");
+        BLINKER_LOG("bat: ", batRead / 100.0, " v");
         // int32_t wRSSI = WiFi.RSSI();
 
-        // BLINKER_LOG4("getSignals: ", wRSSI, " , WiFi.status: ", WiFi.status() == WL_CONNECTED);
+        // BLINKER_LOG("getSignals: ", wRSSI, " , WiFi.status: ", WiFi.status() == WL_CONNECTED);
         // BLINKER_LOG_FreeHeap();
 
-        // // BLINKER_LOG2("aqibase", getAQIbase());
-        // // BLINKER_LOG2("langauage", getLanguage());
-        // // BLINKER_LOG2("timezone", Blinker.getTimezone());
+        // // BLINKER_LOG("aqibase", getAQIbase());
+        // // BLINKER_LOG("langauage", getLanguage());
+        // // BLINKER_LOG("timezone", Blinker.getTimezone());
 
-        // BLINKER_LOG2("pm1.0: ", pm1_0Get());
-        // BLINKER_LOG2("pm2.5: ", pm2_5Get());
-        // BLINKER_LOG2("pm10: ", pm10_0Get());
-        // BLINKER_LOG2("hcho: ", hchoGet());
-        // BLINKER_LOG2("temp: ", tempGet());
-        // BLINKER_LOG2("humi: ", humiGet());
-        // BLINKER_LOG2("AQICN: ", aqiGet(BLINKER_AQI_BASE_CN));
-        // BLINKER_LOG2("AQIUS: ", aqiGet(BLINKER_AQI_BASE_US));
+        // BLINKER_LOG("pm1.0: ", pm1_0Get());
+        // BLINKER_LOG("pm2.5: ", pm2_5Get());
+        // BLINKER_LOG("pm10: ", pm10_0Get());
+        // BLINKER_LOG("hcho: ", hchoGet());
+        // BLINKER_LOG("temp: ", tempGet());
+        // BLINKER_LOG("humi: ", humiGet());
+        // BLINKER_LOG("AQICN: ", aqiGet(BLINKER_AQI_BASE_CN));
+        // BLINKER_LOG("AQIUS: ", aqiGet(BLINKER_AQI_BASE_US));
 
         batFresh = millis();
 
@@ -371,7 +371,7 @@ void checkUpdate()
         tickerTrigged = false;
 
         Blinker.dataUpdate();
-        BLINKER_LOG1("Blinker.dataUpdate()");
+        BLINKER_LOG("Blinker.dataUpdate()");
 
         digitalWrite(BLINKER_POWER_5V_PIN, HIGH);
     }
@@ -379,31 +379,31 @@ void checkUpdate()
 
 void fresh() {
 	wdtTicker.once(3, fresh);
-	BLINKER_LOG1("Fresh & Feed wdt");
+	BLINKER_LOG("Fresh & Feed wdt");
 
 	ESP.wdtFeed();
 }
 
 void pmsWakeUp() {
     wakeUp();
-    BLINKER_LOG1("PMS WAKEUP");
+    BLINKER_LOG("PMS WAKEUP");
     pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
 }
 
 void pmsSleep() {
     sleep();
-    BLINKER_LOG1("PMS SLEEP");
+    BLINKER_LOG("PMS SLEEP");
     pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
 }
 
 void aligenieQuery(int32_t queryCode)
 {
-    BLINKER_LOG2("AliGenie Query codes: ", queryCode);
+    BLINKER_LOG("AliGenie Query codes: ", queryCode);
 
     switch (queryCode)
     {
         case BLINKER_CMD_QUERY_ALL_NUMBER :
-            BLINKER_LOG1("AliGenie Query All");
+            BLINKER_LOG("AliGenie Query All");
             BlinkerAliGenie.temp(tempGet());
             BlinkerAliGenie.humi(humiGet());
             BlinkerAliGenie.pm25(pm2_5Get());
@@ -424,6 +424,8 @@ void AQI_init()
     pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
     
     Blinker.begin(BLINKER_AIR_DETECTOR);
+    BLINKER_DEBUG.stream(Serial);
+    BLINKER_DEBUG.debugAll();
 
     // Blinker.deleteTimer();
 
