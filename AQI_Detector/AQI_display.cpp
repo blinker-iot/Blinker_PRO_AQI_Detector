@@ -5,6 +5,7 @@
 #include <Ticker.h>
 
 // U8g2lib, https://github.com/olikraus/U8g2_Arduino
+// Release version 2.24.3
 #include <U8g2lib.h>
 
 #ifdef U8X8_HAVE_HW_I2C
