@@ -87,13 +87,13 @@ bool pmsFresh()
             // Blinker.delay(10);
         }
 #endif
-        Serial.print("[");
-        Serial.print(millis());
-        Serial.print("] ");
-        Serial.print("Read PMS , PMS_TIME_FRESH: ");
-        Serial.print(PMS_TIME_FRESH);
-        Serial.print(", PMS_TIME_LIMIT: ");
-        Serial.print(PMS_TIME_LIMIT);
+        // Serial.print("[");
+        // Serial.print(millis());
+        // Serial.print("] ");
+        // Serial.print("Read PMS , PMS_TIME_FRESH: ");
+        // Serial.print(PMS_TIME_FRESH);
+        // Serial.print(", PMS_TIME_LIMIT: ");
+        // Serial.print(PMS_TIME_LIMIT);
 
         // pms.wakeUp();
         // delay(10);
@@ -114,13 +114,13 @@ bool pmsFresh()
             // }
             // pms.sleep();
 
-            Serial.println(", not get PMS data");
+            // Serial.println(", not get PMS data");
             return false;
         }
         PMS_TIME_FRESH += PMS_TIME_LIMIT;
         // pms.sleep();
 
-        Serial.println(", get PMS data");
+        // Serial.println(", get PMS data");
         return true;
 
         // return pms.read();

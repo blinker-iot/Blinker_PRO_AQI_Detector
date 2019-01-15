@@ -38,25 +38,33 @@ Ticker pushTicker;
 Ticker wdtTicker;
 Ticker pmsTicker;
 
+static uint32_t data_time = 0;
+
 void aqiStorage()
 {
-    BLINKER_LOG("push ticker trigged");
+    if (millis() - data_time >= 60000)
+    {
+        data_time += 60000;
 
-    Blinker.dataStorage("pm1.0", pm1_0Get());
-    Blinker.dataStorage("pm2.5", pm2_5Get());
-    Blinker.dataStorage("pm10", pm10_0Get());
-    Blinker.dataStorage("hcho", hchoGet());
-    Blinker.dataStorage("temp", tempGet());
-    Blinker.dataStorage("humi", humiGet());
+        // BLINKER_LOG("push ticker trigged");
 
-    if (WiFi.status() == WL_CONNECTED && checkInit()) {
-        tickerTrigged = true;
-
-        // Blinker.dataUpdate();
-        // BLINKER_LOG("Blinker.dataUpdate()");
+        Blinker.dataStorage("pm1.0", pm1_0Get());
+        Blinker.dataStorage("pm2.5", pm2_5Get());
+        Blinker.dataStorage("pm10", pm10_0Get());
+        Blinker.dataStorage("hcho", hchoGet());
+        Blinker.dataStorage("temp", tempGet());
+        Blinker.dataStorage("humi", humiGet());
+        Blinker.dataStorage("aqi", aqiGet(BLINKER_AQI_BASE_CN));
     }
 
-    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
+    // if (WiFi.status() == WL_CONNECTED && checkInit()) {
+    //     tickerTrigged = true;
+
+    //     // Blinker.dataUpdate();
+    //     // BLINKER_LOG("Blinker.dataUpdate()");
+    // }
+
+    // pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
 }
 
 uint8_t getSignals()
@@ -359,7 +367,7 @@ void hardwareInit()
 
     batRead = getBAT() * 10;
 
-    pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
+    // pushTicker.once(BLINKER_AQI_FRESH_TIME, aqiStorage);
     // batRead = 40;
 }
 
@@ -378,22 +386,22 @@ void checkUpdate()
 }
 
 void fresh() {
-	wdtTicker.once(3, fresh);
-	BLINKER_LOG("Fresh & Feed wdt");
+	// wdtTicker.once(3, fresh);
+	// BLINKER_LOG("Fresh & Feed wdt");
 
-	ESP.wdtFeed();
+	// ESP.wdtFeed();
 }
 
 void pmsWakeUp() {
-    wakeUp();
-    BLINKER_LOG("PMS WAKEUP");
-    pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
+    // wakeUp();
+    // BLINKER_LOG("PMS WAKEUP");
+    // pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
 }
 
 void pmsSleep() {
-    sleep();
-    BLINKER_LOG("PMS SLEEP");
-    pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
+    // sleep();
+    // BLINKER_LOG("PMS SLEEP");
+    // pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
 }
 
 void aligenieQuery(int32_t queryCode)
@@ -417,16 +425,16 @@ void aligenieQuery(int32_t queryCode)
 void AQI_init()
 {
     Serial.begin(115200);
+    
+    BLINKER_DEBUG.stream(Serial);
+    BLINKER_DEBUG.debugAll();
 
     hardwareInit();
     u8g2Init();
     pmsInit();
-    pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
+    // pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
     
     Blinker.begin(BLINKER_AIR_DETECTOR);
-    BLINKER_DEBUG.stream(Serial);
-    BLINKER_DEBUG.debugAll();
-
     // Blinker.deleteTimer();
 
     Blinker.attachParse(dataParse);
@@ -447,7 +455,7 @@ void AQI_init()
     attachDisplay(display);
     attachColor(aqiLevelGet);
 
-    wdtTicker.once(3, fresh);
+    // wdtTicker.once(3, fresh);
 }
 
 void cmd()
@@ -471,11 +479,13 @@ void AQI_run()
 
     // cmd();
 
-    batCheck();
+    // batCheck();
 
     aqiFresh();
 
-    checkUpdate();
+    aqiStorage();
+
+    // checkUpdate();
 }
 
 void changeMain()
@@ -536,7 +546,7 @@ bool checkInit()
         if (Blinker.init()) {
             setTimeLimit(BLINKER_PMS_LIMIT_FRESH);
             inited = true;
-            wdtTicker.once(3, fresh);
+            // wdtTicker.once(3, fresh);
         }
     }
     
