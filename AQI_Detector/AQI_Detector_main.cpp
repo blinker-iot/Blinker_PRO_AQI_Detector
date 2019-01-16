@@ -393,15 +393,15 @@ void fresh() {
 }
 
 void pmsWakeUp() {
-    // wakeUp();
-    // BLINKER_LOG("PMS WAKEUP");
-    // pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
+    wakeUp();
+    BLINKER_LOG("PMS WAKEUP");
+    pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
 }
 
 void pmsSleep() {
-    // sleep();
-    // BLINKER_LOG("PMS SLEEP");
-    // pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
+    sleep();
+    BLINKER_LOG("PMS SLEEP");
+    pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
 }
 
 void aligenieQuery(int32_t queryCode)
@@ -432,7 +432,7 @@ void AQI_init()
     hardwareInit();
     u8g2Init();
     pmsInit();
-    // pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
+    pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
     
     Blinker.begin(BLINKER_AIR_DETECTOR);
     // Blinker.deleteTimer();
