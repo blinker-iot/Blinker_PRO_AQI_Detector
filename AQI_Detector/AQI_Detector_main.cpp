@@ -422,6 +422,60 @@ void aligenieQuery(int32_t queryCode)
     }
 }
 
+void duerQuery(int32_t queryCode)
+{
+    BLINKER_LOG("DuerOS Query codes: ", queryCode);
+
+    switch (queryCode)
+    {
+        case BLINKER_CMD_QUERY_AQI_NUMBER :
+            BLINKER_LOG("DuerOS Query AQI");
+            BlinkerDuerOS.aqi(aqiGet(BLINKER_AQI_BASE_CN));
+            BlinkerDuerOS.print();
+            break;
+        case BLINKER_CMD_QUERY_CO2_NUMBER :
+            BLINKER_LOG("DuerOS Query CO2");
+            BlinkerDuerOS.co2(20);
+            BlinkerDuerOS.print();
+            break;
+        case BLINKER_CMD_QUERY_PM10_NUMBER :
+            BLINKER_LOG("DuerOS Query PM10");
+            BlinkerDuerOS.pm10(pm10_0Get());
+            BlinkerDuerOS.print();
+            break;
+        case BLINKER_CMD_QUERY_PM25_NUMBER :
+            BLINKER_LOG("DuerOS Query PM25");
+            BlinkerDuerOS.pm25(pm2_5Get());
+            BlinkerDuerOS.print();
+            break;
+        case BLINKER_CMD_QUERY_HUMI_NUMBER :
+            BLINKER_LOG("DuerOS Query HUMI");
+            BlinkerDuerOS.humi(humiGet());
+            BlinkerDuerOS.print();
+            break;
+        case BLINKER_CMD_QUERY_TEMP_NUMBER :
+            BLINKER_LOG("DuerOS Query TEMP");
+            BlinkerDuerOS.temp(tempGet());
+            BlinkerDuerOS.print();
+            break;
+        case BLINKER_CMD_QUERY_TIME_NUMBER :
+            BLINKER_LOG("DuerOS Query time");
+            BlinkerDuerOS.time(millis());
+            BlinkerDuerOS.print();
+            break;
+        default :
+            BlinkerDuerOS.temp(tempGet());
+            BlinkerDuerOS.humi(humiGet());
+            BlinkerDuerOS.pm25(pm2_5Get());
+            BlinkerDuerOS.pm10(pm10_0Get());
+            BlinkerDuerOS.co2(20);
+            BlinkerDuerOS.aqi(aqiGet(BLINKER_AQI_BASE_CN));
+            BlinkerDuerOS.time(millis());
+            BlinkerDuerOS.print();
+            break;
+    }
+}
+
 void AQI_init()
 {
     Serial.begin(115200);
@@ -451,6 +505,7 @@ void AQI_init()
 #endif
 
     BlinkerAliGenie.attachQuery(aligenieQuery);
+    BlinkerDuerOS.attachQuery(duerQuery);
 
     attachDisplay(display);
     attachColor(aqiLevelGet);
