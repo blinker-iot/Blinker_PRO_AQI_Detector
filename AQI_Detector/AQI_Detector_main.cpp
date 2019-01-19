@@ -17,6 +17,7 @@
 #define BLINKER_BUTTON_PULLDOWN
 #define BLINKER_BUTTON_LONGPRESS_POWERDOWN
 #define BLINKER_BUTTON_PIN 12
+#define BLINKER_OTA_VERSION_CODE "0.1.1"
 
 #include <Blinker.h>
 
@@ -28,6 +29,9 @@
 static bool inited = false;
 static bool initDisplayed = false;
 static bool isAQI = true;
+static bool isSet = false;
+static bool needSleep = false;
+static bool needWakeup = false;
 static uint8_t isLongPress = BLINKER_NONE_LONG_PRESS;
 static bool tickerTrigged = false;
 static uint32_t batRead;
@@ -393,13 +397,19 @@ void fresh() {
 }
 
 void pmsWakeUp() {
-    wakeUp();
+    // wakeUp();
+    isSet = false;
+    needSleep = false;
+    needWakeup = true;
     BLINKER_LOG("PMS WAKEUP");
     pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
 }
 
 void pmsSleep() {
-    sleep();
+    // sleep();
+    isSet = false;
+    needSleep = true;
+    needWakeup = false;
     BLINKER_LOG("PMS SLEEP");
     pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
 }
@@ -539,6 +549,14 @@ void AQI_run()
     aqiFresh();
 
     aqiStorage();
+
+    if (!isSet)
+    {
+        isSet = true;
+
+        if (needSleep) sleep();
+        else if (needWakeup) wakeUp();
+    }
 
     // checkUpdate();
 }
