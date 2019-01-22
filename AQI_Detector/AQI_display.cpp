@@ -22,7 +22,7 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0,/* reset=*/ BLINKER_OLED_RESET_P
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, BLINKER_WS2812_PIN, NEO_GRB + NEO_KHZ800);
 
-static bool isDisplayDetail = false;
+static bool isDisplayDetail = true;
 static bool isNormalDisplay = true;
 static double batGet;
 static uint8_t displayLanguage = BLINKER_LANGUAGE_CN;

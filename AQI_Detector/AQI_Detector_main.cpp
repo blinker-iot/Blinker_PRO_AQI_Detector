@@ -402,6 +402,7 @@ void pmsWakeUp() {
     needSleep = false;
     needWakeup = true;
     BLINKER_LOG("PMS WAKEUP");
+    BLINKER_LOG_FreeHeap();
     pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
 }
 
@@ -411,6 +412,7 @@ void pmsSleep() {
     needSleep = true;
     needWakeup = false;
     BLINKER_LOG("PMS SLEEP");
+    BLINKER_LOG_FreeHeap();
     pmsTicker.once(BLINKER_PMS_SLEEP_TIME, pmsWakeUp);
 }
 
