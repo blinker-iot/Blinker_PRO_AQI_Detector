@@ -1,5 +1,5 @@
 /* 
- * BLINKER_PRO is use for professional device
+ * BLINKER_PRO_ESP is use for professional device
  * 
  * Please make sure you have permission to modify professional device!
  * Please read usermanual first! Thanks!

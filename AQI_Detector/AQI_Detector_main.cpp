@@ -1,5 +1,5 @@
 /* 
- * BLINKER_PRO is use for professional device
+ * BLINKER_PRO_ESP is use for professional device
  * 
  * Please make sure you have permission to modify professional device!
  * Please read usermanual first! Thanks!
@@ -10,7 +10,7 @@
  */
 
 #define BLINKER_PRINT Serial
-#define BLINKER_PRO
+#define BLINKER_PRO_ESP
 #define BLINKER_DEBUG_ALL
 
 #define BLINKER_BUTTON
@@ -25,6 +25,9 @@
 #include "AQI_display.h"
 #include "AQI_sensor.h"
 #include "Ticker.h"
+
+char type[] = "Your Device Type";
+char auth[] = "Your Device Secret Key";
 
 static bool inited = false;
 static bool initDisplayed = false;
@@ -500,7 +503,7 @@ void AQI_init()
     pmsInit();
     pmsTicker.once(BLINKER_PMS_WAKE_TIME, pmsSleep);
     
-    Blinker.begin(BLINKER_AIR_DETECTOR);
+    Blinker.begin(auth, type);
     // Blinker.deleteTimer();
 
     Blinker.attachParse(dataParse);
